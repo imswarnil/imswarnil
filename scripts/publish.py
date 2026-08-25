@@ -40,9 +40,10 @@ def main():
     if not TOKEN:
         sys.exit("set GH_TOKEN (or GITHUB_TOKEN)")
 
-    paths = sorted(p for p in (ROOT / "assets").glob("*.svg"))
+    paths = sorted((ROOT / "assets").glob("*.svg")) + [ROOT / "README.md"]
+    paths = [p for p in paths if p.exists()]
     if not paths:
-        sys.exit("no assets to publish")
+        sys.exit("nothing to publish")
 
     ref  = call("GET", f"/repos/{REPO}/git/ref/heads/{BRANCH}")
     head = ref["object"]["sha"]

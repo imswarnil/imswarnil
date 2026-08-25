@@ -28,7 +28,9 @@ jobs:
       - name: Render
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/render.py --stats
+        run: |
+          python3 scripts/render.py --stats
+          python3 scripts/readme.py
 
       - name: Commit if anything moved
         env:
