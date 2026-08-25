@@ -12,8 +12,10 @@ SOCIAL = [
     ("site",   "ghost",     "imswarnil.com",  "https://imswarnil.com",         True),
     ("x",      "x",         "@imswarnil",     "https://x.com/imswarnil",       False),
     ("github", "github",    "imswarnil",      "https://github.com/imswarnil",  False),
-    ("email",  "mail",      "swarnilsinghaicse@gmail.com",
-     "mailto:swarnilsinghaicse@gmail.com", False),
+    ("linkedin",  "linkedin",  "in/imswarnil",   "https://www.linkedin.com/in/imswarnil/", False),
+    ("instagram", "instagram", "@imswarnil",     "https://instagram.com/imswarnil", False),
+    ("facebook",  "facebook",  "hashtag_swarnil", "https://facebook.com/hashtag_swarnil", False),
+    ("email",  "mail",      "email",          "mailto:swarnilsinghaicse@gmail.com", False),
     ("index",  "grid",      "the index",      "https://imswarnil.github.io",   False),
 ]
 
