@@ -54,9 +54,12 @@ def _over(fg, alpha, bg):
 
 
 # ── brand ────────────────────────────────────────────────────────────────────
-# The system's own accent — the vermilion the docs site wears. One colour, on one
-# thing at a time: the record light, the current row, the first number.
-ACCENT = "#f04e2e"
+# The accent design.imswarnil.com itself wears. In the system it is Ghost's
+# `--ghost-accent-color` with a fallback (`semantic.css`); the docs site sets it in
+# `site/site.config.mjs` as `accent_color: '#ff5a1f'`, and that is the orange a
+# reader coming from the docs has just been looking at. One colour, on one thing at
+# a time: the record light, the current row, the first number.
+ACCENT = "#ff5a1f"
 ON_ACCENT = "#ffffff"
 
 

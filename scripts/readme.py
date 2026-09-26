@@ -97,7 +97,7 @@ The Salesforce material — [CRM Analytics Academy](https://crmanalytics.imswarn
 [Job Seekers Guide](https://jobseekers.imswarnil.com) — is free and stays free.
 If it saved you a week, you can pay for a week of it.
 
-[![Sponsor](https://img.shields.io/badge/Sponsor-f04e2e?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/imswarnil)
+[![Sponsor](https://img.shields.io/badge/Sponsor-ff5a1f?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/imswarnil)
 
 ---
 
