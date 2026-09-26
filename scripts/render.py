@@ -4,8 +4,10 @@
 Text is converted to outlines at build time, so the cards render identically
 everywhere GitHub serves them — no webfont request, no fallback stack.
 
-Palette and type are Frame & Signal (design.imswarnil.com): a near-monochrome ink
-ramp with vermilion rationed as the record light.
+Everything the cards are drawn in comes from scripts/tokens.py: Frame & Signal
+(design.imswarnil.com) resolved to values an SVG can hold. Geist and Geist Mono,
+the system's near-monochrome grey ramp, and one vermilion rationed across the
+page. No colour and no size below is typed by hand.
 
     python3 scripts/render.py                     # everything except the stats card
     python3 scripts/render.py --stats             # stats too (needs GH_TOKEN)
@@ -20,25 +22,13 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from textpath import path, measure
 from icons import ICONS
 import content as C
+import tokens as T
 
-FONTS  = ROOT / "fonts"
-SG_BOLD = str(FONTS / "SpaceGrotesk-Bold.ttf")
-SG_MED  = str(FONTS / "SpaceGrotesk-Medium.ttf")
-MONO    = str(FONTS / "IBMPlexMono-Regular.ttf")
-MONO_M  = str(FONTS / "IBMPlexMono-Medium.ttf")
-
-SIGNAL = "#f04e2e"
-THEMES = {
-    "dark":  dict(bg="#08080c", frame="#272734", rule="#1c1c26", name="#f8f8fa",
-                  tag="#a5a5b2", micro="#76768a", tick="#3c3c4e", body="#a5a5b2",
-                  chip="#101017", chipline="#272734", chiptext="#a5a5b2",
-                  tile="#0d0d13", tileline="#22222e", track="#191922"),
-    "light": dict(bg="#fcfcfd", frame="#d3d3db", rule="#e5e5ea", name="#101017",
-                  tag="#55556a", micro="#76768a", tick="#d3d3db", body="#3c3c4e",
-                  chip="#f8f8fa", chipline="#e5e5ea", chiptext="#55556a",
-                  tile="#ffffff", tileline="#e5e5ea", track="#f1f1f4"),
-}
+SANS, SANS_MED, SANS_SEMI = T.SANS, T.SANS_MED, T.SANS_SEMI
+MONO, MONO_MED = T.MONO, T.MONO_MED
+SZ = T.SIZE
 W = 1200
+GUTTER = 18 * T.SPACE  # 72px — the page margin every card shares
 THEME_NAMES = ("dark", "light")
 
 
@@ -50,9 +40,9 @@ def svg(w, h, bg, label, parts):
         f'<rect width="{w}" height="{h:.0f}" fill="{bg}"/>', *parts, '</svg>'])
 
 
-def wrap(text, font, size, max_w, tracking=0.0):
+def wrap(text_, font, size, max_w, tracking=0.0):
     lines, cur = [], ""
-    for word in text.split():
+    for word in text_.split():
         trial = f"{cur} {word}".strip()
         if cur and measure(trial, font, size, tracking) > max_w:
             lines.append(cur)
@@ -64,78 +54,88 @@ def wrap(text, font, size, max_w, tracking=0.0):
     return lines
 
 
-def chip(text, x, y, t, h=28, size=12.5):
-    w = measure(text, MONO, size, 0.2) + 26
-    return [f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" '
-            f'fill="{t["chip"]}" stroke="{t["chipline"]}"/>',
-            f'<path d="{path(text, MONO, size, x+13, y+h/2+4.5, 0.2)}" '
-            f'fill="{t["chiptext"]}"/>'], w
+def text(s, font, size, x, y, fill, em=0.0):
+    """A run of type. `em` is CSS letter-spacing, in em, as the system states it."""
+    return f'<path d="{path(s, font, size, x, y, T.track(size, em))}" fill="{fill}"/>'
 
 
-def label(text, x, y, fill, size=11, tracking=3.0, font=MONO):
-    return f'<path d="{path(text, font, size, x, y, tracking)}" fill="{fill}"/>'
+def chip(s, x, y, t, h=7 * T.SPACE, size=SZ["xs"]):
+    """im-badge, pill variant: a fill from the surface ramp, no border, ink on it."""
+    w = measure(s, MONO_MED, size) + 26
+    return [f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h / 2}" '
+            f'fill="{t["surface_2"]}"/>',
+            text(s, MONO_MED, size, x + 13, y + h / 2 + 4.5, t["ink"])], w
+
+
+def caption(s, x, y, fill, size=SZ["xs"], font=MONO_MED):
+    """im-caption — mono, 12px, 500, 0.08em, and quiet. Every label on the page."""
+    return text(s, font, size, x, y, fill, T.CAPTION_TRACKING)
+
+
+def caption_w(s, size=SZ["xs"], font=MONO_MED):
+    return measure(s, font, size, T.track(size, T.CAPTION_TRACKING))
 
 
 def rule(x1, x2, y, fill):
-    return f'<rect x="{x1}" y="{y}" width="{x2-x1}" height="1" fill="{fill}"/>'
+    return f'<rect x="{x1}" y="{y}" width="{x2 - x1}" height="1" fill="{fill}"/>'
 
 
 # ── banner ───────────────────────────────────────────────────────────────────
 def banner(t):
     H = 340
     o, M = [], 26
-    for x, y, dx, dy in ((M, M, 1, 1), (W-M, M, -1, 1), (M, H-M, 1, -1), (W-M, H-M, -1, -1)):
-        o.append(f'<path d="M{x} {y+dy*26} L{x} {y} L{x+dx*26} {y}" fill="none" '
-                 f'stroke="{t["frame"]}" stroke-width="2" stroke-linecap="square"/>')
+    for x, y, dx, dy in ((M, M, 1, 1), (W - M, M, -1, 1),
+                         (M, H - M, 1, -1), (W - M, H - M, -1, -1)):
+        o.append(f'<path d="M{x} {y + dy * 26} L{x} {y} L{x + dx * 26} {y}" fill="none" '
+                 f'stroke="{t["surface_3"]}" stroke-width="2" stroke-linecap="square"/>')
 
     rx, ry = 74, 84
-    o.append(f'<circle cx="{rx}" cy="{ry}" r="11" fill="{SIGNAL}" opacity="0.14"/>')
-    o.append(f'<circle cx="{rx}" cy="{ry}" r="5" fill="{SIGNAL}"/>')
-    o.append(label(C.ROLE, rx+22, ry+4.5, t["micro"], 12, 3.2, MONO_M))
-    pw = measure(C.PLACE, MONO, 12, 3.2)
-    o.append(label(C.PLACE, W-74-pw, ry+4.5, t["micro"], 12, 3.2))
+    o.append(f'<circle cx="{rx}" cy="{ry}" r="11" fill="{t["accent"]}" opacity="0.14"/>')
+    o.append(f'<circle cx="{rx}" cy="{ry}" r="5" fill="{t["accent"]}"/>')
+    o.append(caption(C.ROLE, rx + 22, ry + 4.5, t["muted"]))
+    o.append(caption(C.PLACE, W - 74 - caption_w(C.PLACE), ry + 4.5, t["muted"]))
 
-    o.append(f'<path d="{path(C.NAME, SG_BOLD, 68, 72, 186, -0.5)}" fill="{t["name"]}"/>')
-    o.append(f'<path d="{path(C.TAGLINE, SG_MED, 24, 74, 228)}" fill="{t["tag"]}"/>')
-    o.append(f'<path d="{path(".", SG_MED, 24, 74+measure(C.TAGLINE, SG_MED, 24), 228)}" '
-             f'fill="{SIGNAL}"/>')
+    o.append(text(C.NAME, SANS_SEMI, SZ["display"], 72, 190, t["ink"], T.TIGHTER))
+    o.append(text(C.TAGLINE, SANS_MED, SZ["h2"], 74, 232, t["body"], T.TIGHT))
+    tw = measure(C.TAGLINE, SANS_MED, SZ["h2"], T.track(SZ["h2"], T.TIGHT))
+    o.append(text(".", SANS_MED, SZ["h2"], 74 + tw, 232, t["accent"]))
 
-    x, y = 72, 262
+    x, y = 72, 264
     for c in C.CHIPS:
         parts, cw = chip(c, x, y, t)
         o += parts
-        x += cw + 8
+        x += cw + 2 * T.SPACE
 
     for i in range(9):
-        o.append(f'<rect x="{W-74-i*13:.0f}" y="{y+6}" width="3" height="14" rx="1.5" '
-                 f'fill="{SIGNAL if i == 3 else t["tick"]}"/>')
+        o.append(f'<rect x="{W - 74 - i * 13:.0f}" y="{y + 6}" width="3" height="14" rx="1.5" '
+                 f'fill="{t["accent"] if i == 3 else t["surface_3"]}"/>')
 
-    return svg(W, H, t["bg"], f"{C.NAME} — {C.TAGLINE}", o)
+    return svg(W, H, t["canvas"], f"{C.NAME} — {C.TAGLINE}", o)
 
 
 # ── social pills ─────────────────────────────────────────────────────────────
 def social_pill(icon, handle, primary, t):
-    H, SZ, PAD = 34, 15, 15
-    tw = measure(handle, MONO, 12.5, 0.2)
-    w = PAD + SZ + 9 + tw + PAD
-    fg = "#ffffff" if primary else t["chiptext"]
-    return svg(round(w), H, t["bg"], handle, [
-        f'<rect x="0.5" y="0.5" width="{w-1:.1f}" height="{H-1}" rx="{(H-1)/2}" '
-        f'fill="{SIGNAL if primary else t["chip"]}" '
-        f'stroke="{SIGNAL if primary else t["chipline"]}"/>',
-        f'<g transform="translate({PAD} {(H-SZ)/2}) scale({SZ/24})">'
+    H, ICON, PAD = 34, 15, 15
+    tw = measure(handle, MONO_MED, SZ["xs"])
+    w = PAD + ICON + 9 + tw + PAD
+    fg = t["on_accent"] if primary else t["ink"]
+    return svg(round(w), H, t["canvas"], handle, [
+        f'<rect width="{w:.1f}" height="{H}" rx="{H / 2}" '
+        f'fill="{t["accent"] if primary else t["surface_2"]}"/>',
+        f'<g transform="translate({PAD} {(H - ICON) / 2}) scale({ICON / 24})">'
         f'<path d="{ICONS[icon]}" fill="{fg}"/></g>',
-        f'<path d="{path(handle, MONO, 12.5, PAD+SZ+9, H/2+4.5, 0.2)}" fill="{fg}"/>'])
+        text(handle, MONO_MED, SZ["xs"], PAD + ICON + 9, H / 2 + 4.5, fg)])
 
 
 # ── skills ───────────────────────────────────────────────────────────────────
 def skills_card(t):
-    L, R, LABEL_W, CH, GAP, ROW = 72, W-72, 168, 28, 8, 36
+    L, R, LABEL_W = GUTTER, W - GUTTER, 200
+    GAP, ROW = 2 * T.SPACE, 9 * T.SPACE
     body, y = [], 58
     for i, (group, items) in enumerate(C.SKILLS):
         if i:
             y += 14
-            body.append(rule(L, R, y-24, t["rule"]))
+            body.append(rule(L, R, y - 24, t["line"]))
         top, x = y, L + LABEL_W
         for item in items:
             parts, cw = chip(item, x, y, t)
@@ -144,74 +144,73 @@ def skills_card(t):
                 parts, cw = chip(item, x, y, t)
             body += parts
             x += cw + GAP
-        body.append(label(group, L, top+18.5, SIGNAL if i == 0 else t["micro"], 11, 3, MONO_M))
+        body.append(caption(group, L, top + 19, t["accent"] if i == 0 else t["muted"]))
         y += ROW
-    return svg(W, y+18, t["bg"], "Skills",
-               [label("SKILLS", L, 32, t["micro"])] + body)
+    return svg(W, y + 18, t["canvas"], "Skills",
+               [caption("SKILLS", L, 32, t["muted"])] + body)
 
 
 # ── experience ───────────────────────────────────────────────────────────────
 def experience_card(t):
-    L, R = 72, W-72
-    o = [label("EXPERIENCE  ·  GO-TO-MARKET ENGINEERING", L, 34, t["micro"])]
+    L, R = GUTTER, W - GUTTER
+    o = [caption("EXPERIENCE  ·  GO-TO-MARKET ENGINEERING", L, 34, t["muted"])]
 
     y = 68
-    for line in wrap(C.SUMMARY, SG_MED, 16, R-L):
-        o.append(f'<path d="{path(line, SG_MED, 16, L, y)}" fill="{t["tag"]}"/>')
-        y += 25
+    for line in wrap(C.SUMMARY, SANS, SZ["base"], R - L):
+        o.append(text(line, SANS, SZ["base"], L, y, t["body"]))
+        y += 26  # --im-leading-base, 1.6
     y += 12
-    o.append(rule(L, R, y, t["rule"]))
+    o.append(rule(L, R, y, t["line"]))
     y += 34
 
     for years, role, company, place, current in C.ROLES:
-        o.append(label(years, L, y, SIGNAL if current else t["micro"], 12, 1.6, MONO_M))
-        rw = measure(role, SG_BOLD, 17)
-        o.append(f'<path d="{path(role, SG_BOLD, 17, L+150, y)}" fill="{t["name"]}"/>')
-        o.append(f'<path d="{path("· " + company, SG_MED, 17, L+150+rw+10, y)}" '
-                 f'fill="{t["tag"]}"/>')
-        pw = measure(place, MONO, 11, 1.6)
-        o.append(label(place, R-pw, y, t["micro"], 11, 1.6))
-        y += 40
+        o.append(caption(years, L, y, t["accent"] if current else t["muted"]))
+        o.append(text(role, SANS_SEMI, SZ["h4"], L + 150, y, t["ink"], T.TIGHT))
+        rw = measure(role, SANS_SEMI, SZ["h4"], T.track(SZ["h4"], T.TIGHT))
+        o.append(text("· " + company, SANS, SZ["h4"], L + 150 + rw + 10, y, t["body"]))
+        o.append(caption(place, R - caption_w(place), y, t["muted"]))
+        y += 10 * T.SPACE
 
     y += 4
-    o.append(rule(L, R, y, t["rule"]))
+    o.append(rule(L, R, y, t["line"]))
     y += 34
-    o.append(label("SELECTED WORK", L, y, t["micro"]))
+    o.append(caption("SELECTED WORK", L, y, t["muted"]))
     y += 26
 
     for item in C.HIGHLIGHTS:
-        o.append(f'<rect x="{L}" y="{y-9}" width="10" height="2" fill="{SIGNAL}"/>')
-        for line in wrap(item, SG_MED, 14.5, R-L-26):
-            o.append(f'<path d="{path(line, SG_MED, 14.5, L+26, y)}" fill="{t["body"]}"/>')
-            y += 22
+        o.append(f'<rect x="{L}" y="{y - 9}" width="10" height="2" fill="{t["accent"]}"/>')
+        for line in wrap(item, SANS, SZ["sm"], R - L - 26):
+            o.append(text(line, SANS, SZ["sm"], L + 26, y, t["body"]))
+            y += 21  # --im-leading-sm, 1.5
         y += 10
 
     y += 4
-    o.append(rule(L, R, y, t["rule"]))
+    o.append(rule(L, R, y, t["line"]))
     y += 30
-    o.append(label(C.EDUCATION, L, y, t["micro"], 12, 1.4, MONO_M))
+    o.append(caption(C.EDUCATION, L, y, t["muted"]))
 
-    return svg(W, y+30, t["bg"], "Experience", o)
+    return svg(W, y + 30, t["canvas"], "Experience", o)
 
 
 # ── project tiles ────────────────────────────────────────────────────────────
 def project_tile(title, blurb, stack, status, t):
-    TW, TH, P = 580, 190, 28
+    TW, TH, P = 580, 190, 7 * T.SPACE
     building = status == "building"
-    o = [f'<rect x="0.5" y="0.5" width="{TW-1}" height="{TH-1}" rx="14" '
-         f'fill="{t["tile"]}" stroke="{t["tileline"]}"/>',
-         f'<circle cx="{P+4}" cy="34" r="4" fill="{SIGNAL if building else t["tick"]}"/>',
-         label(status.upper(), P+17, 38, SIGNAL if building else t["micro"], 10, 2.6, MONO_M),
-         f'<path d="M{TW-P-13} 40 L{TW-P} 27 M{TW-P-8} 27 H{TW-P} V35" fill="none" '
-         f'stroke="{t["tick"]}" stroke-width="1.6" stroke-linecap="square"/>',
-         f'<path d="{path(title, SG_BOLD, 23, P, 84, -0.3)}" fill="{t["name"]}"/>']
+    o = [f'<rect x="0.5" y="0.5" width="{TW - 1}" height="{TH - 1}" rx="{T.RADIUS["xl"]}" '
+         f'fill="{t["surface"]}" stroke="{t["line"]}"/>',
+         f'<circle cx="{P + 4}" cy="34" r="4" '
+         f'fill="{t["accent"] if building else t["surface_3"]}"/>',
+         caption(status.upper(), P + 17, 38, t["accent"] if building else t["muted"]),
+         f'<path d="M{TW - P - 13} 40 L{TW - P} 27 M{TW - P - 8} 27 H{TW - P} V35" fill="none" '
+         f'stroke="{t["faint"]}" stroke-width="1.6" stroke-linecap="square"/>',
+         text(title, SANS_SEMI, SZ["h2"], P, 88, t["ink"], T.TIGHT)]
 
-    y = 114
-    for line in wrap(blurb, SG_MED, 14, TW-2*P)[:2]:
-        o.append(f'<path d="{path(line, SG_MED, 14, P, y)}" fill="{t["tag"]}"/>')
+    y = 120
+    for line in wrap(blurb, SANS, SZ["sm"], TW - 2 * P)[:2]:
+        o.append(text(line, SANS, SZ["sm"], P, y, t["body"]))
         y += 21
-    o.append(label(stack, P, TH-28, t["micro"], 11.5, 0.8))
-    return svg(TW, TH, t["bg"], f"{title} — {blurb}", o)
+    o.append(text(stack, MONO, SZ["xs"], P, TH - 28, t["muted"], T.WIDE))
+    return svg(TW, TH, t["canvas"], f"{title} — {blurb}", o)
 
 
 # ── stats ────────────────────────────────────────────────────────────────────
@@ -260,7 +259,7 @@ def shape(payload):
     for repo in u["repositories"]["nodes"]:
         for e in repo["languages"]["edges"]:
             n = e["node"]["name"]
-            langs.setdefault(n, [0, e["node"]["color"] or "#76768a"])
+            langs.setdefault(n, [0, e["node"]["color"] or T.GRAY[500]])
             langs[n][0] += e["size"]
     total = sum(v[0] for v in langs.values()) or 1
     cc = u["contributionsCollection"]
@@ -269,34 +268,34 @@ def shape(payload):
                (f'{cc["totalCommitContributions"]:,}', "COMMITS · 1Y"),
                (str(u["repositories"]["totalCount"]), "PUBLIC REPOS"),
                (str(u["followers"]["totalCount"]), "FOLLOWERS")],
-        langs=[(n, v[0]/total*100, v[1])
+        langs=[(n, v[0] / total * 100, v[1])
                for n, v in sorted(langs.items(), key=lambda kv: -kv[1][0])[:6]],
         stamped=datetime.datetime.now(datetime.timezone.utc).strftime("%d %b %Y").upper())
 
 
 def stats_card(t, data):
-    H, L, R = 300, 72, W-72
-    o = [label(f'SNAPSHOT  ·  {data["stamped"]}', L, 44, t["micro"])]
+    H, L, R = 300, GUTTER, W - GUTTER
+    o = [caption(f'SNAPSHOT  ·  {data["stamped"]}', L, 44, t["muted"])]
     tail = "GITHUB.COM/IMSWARNIL"
-    o.append(label(tail, R-measure(tail, MONO, 11, 3), 44, t["micro"]))
-    o.append(rule(L, R, 60, t["rule"]))
+    o.append(caption(tail, R - caption_w(tail), 44, t["muted"]))
+    o.append(rule(L, R, 60, t["line"]))
 
-    col = (R-L)/4
+    col = (R - L) / 4
     for i, (value, lab) in enumerate(data["stats"]):
-        x = L + i*col
-        o.append(f'<path d="{path(value, SG_BOLD, 46, x, 124, -0.5)}" '
-                 f'fill="{SIGNAL if i == 0 else t["name"]}"/>')
-        o.append(label(lab, x+2, 150, t["micro"], 11, 2.4))
+        x = L + i * col
+        o.append(text(value, SANS_SEMI, SZ["figure"], x, 124,
+                      t["accent"] if i == 0 else t["ink"], T.TIGHTER))
+        o.append(caption(lab, x + 2, 152, t["muted"]))
 
-    o.append(label("LANGUAGES BY VOLUME", L, 202, t["micro"]))
+    o.append(caption("LANGUAGES BY VOLUME", L, 202, t["muted"]))
     by, bh = 216, 10
-    o.append(f'<clipPath id="bar"><rect x="{L}" y="{by}" width="{R-L}" height="{bh}" '
-             f'rx="{bh/2}"/></clipPath>')
-    o.append(f'<rect x="{L}" y="{by}" width="{R-L}" height="{bh}" rx="{bh/2}" '
-             f'fill="{t["track"]}"/><g clip-path="url(#bar)">')
+    o.append(f'<clipPath id="bar"><rect x="{L}" y="{by}" width="{R - L}" height="{bh}" '
+             f'rx="{bh / 2}"/></clipPath>')
+    o.append(f'<rect x="{L}" y="{by}" width="{R - L}" height="{bh}" rx="{bh / 2}" '
+             f'fill="{t["surface_2"]}"/><g clip-path="url(#bar)">')
     x = float(L)
     for _, pct, color in data["langs"]:
-        w = (R-L)*pct/100
+        w = (R - L) * pct / 100
         o.append(f'<rect x="{x:.2f}" y="{by}" width="{w:.2f}" height="{bh}" fill="{color}"/>')
         x += w
     o.append('</g>')
@@ -304,11 +303,11 @@ def stats_card(t, data):
     x = float(L)
     for name, pct, color in data["langs"]:
         lab = f"{name}  {pct:.0f}%"
-        o.append(f'<circle cx="{x+4:.1f}" cy="{by+44}" r="4" fill="{color}"/>')
-        o.append(f'<path d="{path(lab, MONO, 12, x+16, by+48.5, 0.2)}" fill="{t["chiptext"]}"/>')
-        x += measure(lab, MONO, 12, 0.2) + 42
+        o.append(f'<circle cx="{x + 4:.1f}" cy="{by + 44}" r="4" fill="{color}"/>')
+        o.append(text(lab, MONO, SZ["xs"], x + 16, by + 48.5, t["body"]))
+        x += measure(lab, MONO, SZ["xs"]) + 42
 
-    return svg(W, H, t["bg"], "GitHub activity for imswarnil", o)
+    return svg(W, H, t["canvas"], "GitHub activity for imswarnil", o)
 
 
 # ── build ────────────────────────────────────────────────────────────────────
@@ -329,7 +328,7 @@ def main():
         written += 1
 
     for theme in THEME_NAMES:
-        t = THEMES[theme]
+        t = T.THEMES[theme]
         write(f"header-{theme}.svg", banner(t))
         write(f"skills-{theme}.svg", skills_card(t))
         write(f"experience-{theme}.svg", experience_card(t))
@@ -341,7 +340,7 @@ def main():
     if args.stats:
         data = fetch(args.from_json)
         for theme in THEME_NAMES:
-            write(f"stats-{theme}.svg", stats_card(THEMES[theme], data))
+            write(f"stats-{theme}.svg", stats_card(T.THEMES[theme], data))
 
     print(f"wrote {written} svg files to {out}")
 

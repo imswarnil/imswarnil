@@ -103,9 +103,11 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 
 <sub>Not a third-party widget. <a href="scripts/render.py"><code>scripts/render.py</code></a>
 draws every card on this page from the GitHub API in
-<a href="https://design.imswarnil.com">Frame &amp; Signal</a>, converting the type to
-outlines so it renders the same everywhere. Same rule as the rest: no dependency it
-didn't need.</sub>
+<a href="https://design.imswarnil.com">Frame &amp; Signal</a> — Geist and Geist Mono, and the
+system's own grey ramp resolved out of <code>oklch()</code> in
+<a href="scripts/tokens.py"><code>scripts/tokens.py</code></a>, because an SVG served through an
+image proxy gets no CSS. The type is converted to outlines so it renders the same everywhere.
+Same rule as the rest: no dependency it didn't need.</sub>
 
 ## Sponsor
 
