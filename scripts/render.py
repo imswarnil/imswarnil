@@ -6,7 +6,7 @@ everywhere GitHub serves them — no webfont request, no fallback stack.
 
 Everything the cards are drawn in comes from scripts/tokens.py: Frame & Signal
 (design.imswarnil.com) resolved to values an SVG can hold. Geist and Geist Mono,
-the system's near-monochrome grey ramp, and one vermilion rationed across the
+the system's near-monochrome grey ramp, and one orange rationed across the
 page. No colour and no size below is typed by hand.
 
     python3 scripts/render.py                     # everything except the stats card
