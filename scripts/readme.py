@@ -4,7 +4,7 @@
 Add a project to content.py, run scripts/render.py then this, and the tile, the link
 and the grid cell all appear together.
 """
-import sys
+import hashlib, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -12,12 +12,33 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import content as C
 
 
+def stamp(base):
+    """A short digest of the pair, appended to the URL as ?v=.
+
+    The filenames never change, so nothing downstream would otherwise know a card
+    had been redrawn: raw.githubusercontent.com serves the SVGs with max-age=300,
+    GitHub's image proxy caches them against the URL for much longer, and a reader
+    who has seen the page before keeps the copy they already have. Putting the
+    content in the URL means a redraw is a new URL and a stale card cannot survive
+    one; a rerun that changes nothing leaves the README byte-identical, so the
+    daily refresh still commits only when something actually moved.
+    """
+    h = hashlib.sha256()
+    for theme in ("light", "dark"):
+        f = ROOT / "assets" / f"{base}-{theme}.svg"
+        if not f.exists():          # a card this run did not draw (--stats omitted)
+            return ""
+        h.update(f.read_bytes())
+    return "?v=" + h.hexdigest()[:8]
+
+
 def picture(base, alt, width=None):
     w = f' width="{width}"' if width else ""
+    v = stamp(base)
     return (f'<picture>'
-            f'<source media="(prefers-color-scheme: dark)" srcset="assets/{base}-dark.svg">'
-            f'<source media="(prefers-color-scheme: light)" srcset="assets/{base}-light.svg">'
-            f'<img alt="{alt}" src="assets/{base}-light.svg"{w}>'
+            f'<source media="(prefers-color-scheme: dark)" srcset="assets/{base}-dark.svg{v}">'
+            f'<source media="(prefers-color-scheme: light)" srcset="assets/{base}-light.svg{v}">'
+            f'<img alt="{alt}" src="assets/{base}-light.svg{v}"{w}>'
             f'</picture>')
 
 
