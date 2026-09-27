@@ -13,7 +13,7 @@ page. No colour and no size below is typed by hand.
     python3 scripts/render.py --stats             # stats too (needs GH_TOKEN)
     gh api graphql -f query=... | python3 scripts/render.py --stats --from-json -
 """
-import argparse, datetime, json, os, ssl, sys, urllib.request
+import argparse, base64, datetime, json, os, ssl, sys, urllib.request
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -88,22 +88,83 @@ def outline(x, y, w, h, t, r=None):
             f'fill="none" stroke="{t["line"]}"/>')
 
 
-def bg_grid(w, h, t, pitch=40, x=0, y=0, pid="grid"):
+def bg_grid(w, h, t, pitch=40, x=0, y=0, pid="grid", ink=None):
     """im-bg-grid — drafting paper, at the utility's own 2.5rem pitch."""
     return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
             f'patternUnits="userSpaceOnUse" patternTransform="translate(-1 -1)">'
-            f'<path d="M{pitch} 0 L0 0 0 {pitch}" fill="none" stroke="{t["line"]}" '
+            f'<path d="M{pitch} 0 L0 0 0 {pitch}" fill="none" stroke="{ink or t["line"]}" '
             f'stroke-width="1"/></pattern></defs>'
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
 
 
-def bg_lines(w, h, t, x=0, y=0, pitch=8, pid="hatch"):
+def bg_lines(w, h, t, x=0, y=0, pitch=8, pid="hatch", ink=None):
     """im-bg-lines — a 135° hatch, the filler the docs put beside a split section."""
     return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
             f'patternUnits="userSpaceOnUse" patternTransform="rotate(135)">'
-            f'<line x1="0" y1="0" x2="0" y2="{pitch}" stroke="{t["line"]}" '
+            f'<line x1="0" y1="0" x2="0" y2="{pitch}" stroke="{ink or t["line"]}" '
             f'stroke-width="1"/></pattern></defs>'
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
+
+
+def bg_diamond(w, h, t, x=0, y=0, pitch=16, pid="dia", ink=None):
+    """im-bg-diamond — hatching both ways, a diamond lattice."""
+    return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
+            f'patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+            f'<line x1="0" y1="0" x2="0" y2="{pitch}" stroke="{ink or t["line"]}" stroke-width="1"/>'
+            f'<line x1="0" y1="0" x2="{pitch}" y2="0" stroke="{ink or t["line"]}" stroke-width="1"/>'
+            f'</pattern></defs>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
+
+
+def bg_dots(w, h, t, x=0, y=0, pitch=16, pid="dots", ink=None):
+    """im-bg-dots — the marks family."""
+    return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
+            f'patternUnits="userSpaceOnUse">'
+            f'<circle cx="1.5" cy="1.5" r="1.5" fill="{ink or t["line"]}"/></pattern></defs>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
+
+
+# The pattern families a card falls back to, cycled so neighbours differ.
+PATTERNS = (bg_grid, bg_diamond, bg_lines, bg_dots)
+
+
+def shot(slug):
+    """A real screenshot for this project, if one has been put in shots/.
+
+    An SVG served through GitHub's image proxy can fetch nothing, so the picture
+    has to travel inside the file — base64, not an href to the png. Drop
+    shots/<slug>.png in and the card uses it; leave it out and the media falls
+    back to the system's own no-image treatment.
+    """
+    f = ROOT / "shots" / f"{slug}.png"
+    return base64.b64encode(f.read_bytes()).decode() if f.exists() else None
+
+
+def media(x, y, w, h, title, slug, t, idx):
+    """im-card-media, on --im-surface-2, at a ratio set the way --im-card-ratio
+    sets one. With no screenshot this is im-thumb's treatment: the surface, a
+    pattern from the utilities, and the title's initial set large and quiet —
+    what the system already does for a post with no feature image.
+    """
+    clip = f"m{slug}"
+    o = [f'<defs><clipPath id="{clip}"><rect x="{x}" y="{y}" width="{w}" height="{h}" '
+         f'rx="1"/></clipPath></defs>',
+         f'<g clip-path="url(#{clip})">',
+         f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{t["surface_2"]}"/>']
+    png = shot(slug)
+    if png:
+        o.append(f'<image x="{x}" y="{y}" width="{w}" height="{h}" '
+                 f'preserveAspectRatio="xMidYMid slice" '
+                 f'href="data:image/png;base64,{png}"/>')
+    else:
+        o.append(PATTERNS[idx % len(PATTERNS)](w, h, t, x=x, y=y, pid=f"p{slug}",
+                                               ink=t["surface_3"]))
+        initial, size = title[0].upper(), h * 0.4
+        iw = measure(initial, SANS_SEMI, size)
+        o.append(text(initial, SANS_SEMI, size, x + (w - iw) / 2,
+                      y + h / 2 + size * 0.36, t["faint"], T.TIGHTER))
+    o.append("</g>")
+    return o
 
 
 def badge(s, x, y, t, accent=False):
@@ -307,20 +368,26 @@ def experience_card(t):
 
 
 # ── project tiles ────────────────────────────────────────────────────────────
-def project_tile(title, blurb, stack, status, t):
-    """im-card-outline im-card-link: a badge, a title, two lines and the stack.
+def project_tile(title, blurb, stack, status, t, slug="x", idx=0):
+    """im-card with media: the picture band, a badge over it, then the body.
 
-    Outline rather than filled, because that is what the docs home page is made
-    of — a grid of hairlines on the canvas, not a wall of grey panels.
+    The media is the point of the card here — a project is a thing you look at.
+    With no screenshot yet it is the system's no-image treatment rather than a
+    blank box, and dropping shots/<slug>.png in swaps a real one straight into
+    the same slot without touching this function.
     """
-    TW, TH, P = 580, 200, 7 * T.SPACE
-    building = status == "building"
+    TW, P = 580, 7 * T.SPACE
+    MH = round(TW / 2)              # --im-card-ratio: 2 / 1
+    TH = MH + 176
     o = [outline(0, 0, TW, TH, t)]
-    o += badge(status.upper(), P, 26, t, accent=building)[0]
-    o.append(arrow(TW - P - 12, 28, t))
-    o.append(text(title, SANS_SEMI, SZ["h2"], P, 96, t["ink"], T.TIGHT))
+    o += media(1, 1, TW - 2, MH, title, slug, t, idx)
+    o.append(rule(0, TW, MH + 1, t["line"]))
+    o += badge(status.upper(), P, MH - 34, t, accent=(status == "building"))[0]
 
-    y = 128
+    y = MH + 60
+    o.append(text(title, SANS_SEMI, SZ["h2"], P, y, t["ink"], T.TIGHT))
+    o.append(arrow(TW - P - 12, y - 22, t))
+    y += 32
     for line in wrap(blurb, SANS, SZ["sm"], TW - 2 * P)[:2]:
         o.append(text(line, SANS, SZ["sm"], P, y, t["body"]))
         y += round(SZ["sm"] * T.LEADING["sm"])
@@ -453,8 +520,9 @@ def main():
         write(f"experience-{theme}.svg", experience_card(t))
         for slug, icon, handle, _url, primary in C.SOCIAL:
             write(f"social-{slug}-{theme}.svg", social_pill(icon, handle, primary, t))
-        for slug, title, blurb, stack, status, _url in C.BUILDING + C.LIVE:
-            write(f"proj-{slug}-{theme}.svg", project_tile(title, blurb, stack, status, t))
+        for i, (slug, title, blurb, stack, status, _url) in enumerate(C.BUILDING + C.LIVE):
+            write(f"proj-{slug}-{theme}.svg",
+                  project_tile(title, blurb, stack, status, t, slug, i))
 
     if args.stats:
         data = fetch(args.from_json)

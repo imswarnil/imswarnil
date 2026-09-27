@@ -27,23 +27,23 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 <table>
   <tr>
     <td width="50%">
-      <a href="https://github.com/imswarnil/Namaste-Salesforce"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-namaste-dark.svg?v=c8250cdb"><source media="(prefers-color-scheme: light)" srcset="assets/proj-namaste-light.svg?v=c8250cdb"><img alt="Namaste Salesforce — A Salesforce teaching platform — Ghost theme out front, Next.js LMS behind it." src="assets/proj-namaste-light.svg?v=c8250cdb" width="100%"></picture></a>
+      <a href="https://github.com/imswarnil/Namaste-Salesforce"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-namaste-dark.svg?v=ad45b1a0"><source media="(prefers-color-scheme: light)" srcset="assets/proj-namaste-light.svg?v=ad45b1a0"><img alt="Namaste Salesforce — A Salesforce teaching platform — Ghost theme out front, Next.js LMS behind it." src="assets/proj-namaste-light.svg?v=ad45b1a0" width="100%"></picture></a>
     </td>
     <td width="50%">
-      <a href="https://github.com/imswarnil/NSDS-Design-System"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-nsds-dark.svg?v=06338ab3"><source media="(prefers-color-scheme: light)" srcset="assets/proj-nsds-light.svg?v=06338ab3"><img alt="NS Design System — One token set feeding both halves of it, Handlebars and React reading one source." src="assets/proj-nsds-light.svg?v=06338ab3" width="100%"></picture></a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <a href="https://github.com/imswarnil/Swarnil-Ghost-Theme"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-ghosttheme-dark.svg?v=b72aea54"><source media="(prefers-color-scheme: light)" srcset="assets/proj-ghosttheme-light.svg?v=b72aea54"><img alt="Swarnil Ghost Theme — A premium Ghost theme for independent creators, on a two-axis token architecture." src="assets/proj-ghosttheme-light.svg?v=b72aea54" width="100%"></picture></a>
-    </td>
-    <td width="50%">
-      <a href="https://github.com/imswarnil"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-sponsor-dark.svg?v=0bfb5c0b"><source media="(prefers-color-scheme: light)" srcset="assets/proj-sponsor-light.svg?v=0bfb5c0b"><img alt="Be My Sponsor — Single-tenant ad platform — advertisers buy placements on the blog, videos and repos." src="assets/proj-sponsor-light.svg?v=0bfb5c0b" width="100%"></picture></a>
+      <a href="https://github.com/imswarnil/NSDS-Design-System"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-nsds-dark.svg?v=d26077f2"><source media="(prefers-color-scheme: light)" srcset="assets/proj-nsds-light.svg?v=d26077f2"><img alt="NS Design System — One token set feeding both halves of it, Handlebars and React reading one source." src="assets/proj-nsds-light.svg?v=d26077f2" width="100%"></picture></a>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <a href="https://github.com/imswarnil/Invite-Only-Onboarding-Portal"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-onboarding-dark.svg?v=28206b1f"><source media="(prefers-color-scheme: light)" srcset="assets/proj-onboarding-light.svg?v=28206b1f"><img alt="Invite-Only Onboarding — A gated onboarding flow, built as a self-contained portal." src="assets/proj-onboarding-light.svg?v=28206b1f" width="100%"></picture></a>
+      <a href="https://github.com/imswarnil/Swarnil-Ghost-Theme"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-ghosttheme-dark.svg?v=3ae43981"><source media="(prefers-color-scheme: light)" srcset="assets/proj-ghosttheme-light.svg?v=3ae43981"><img alt="Swarnil Ghost Theme — A premium Ghost theme for independent creators, on a two-axis token architecture." src="assets/proj-ghosttheme-light.svg?v=3ae43981" width="100%"></picture></a>
+    </td>
+    <td width="50%">
+      <a href="https://github.com/imswarnil"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-sponsor-dark.svg?v=b08f45a1"><source media="(prefers-color-scheme: light)" srcset="assets/proj-sponsor-light.svg?v=b08f45a1"><img alt="Be My Sponsor — Single-tenant ad platform — advertisers buy placements on the blog, videos and repos." src="assets/proj-sponsor-light.svg?v=b08f45a1" width="100%"></picture></a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <a href="https://github.com/imswarnil/Invite-Only-Onboarding-Portal"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-onboarding-dark.svg?v=3d073f86"><source media="(prefers-color-scheme: light)" srcset="assets/proj-onboarding-light.svg?v=3d073f86"><img alt="Invite-Only Onboarding — A gated onboarding flow, built as a self-contained portal." src="assets/proj-onboarding-light.svg?v=3d073f86" width="100%"></picture></a>
     </td>
     <td width="50%"></td>
   </tr>
@@ -54,34 +54,34 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 <table>
   <tr>
     <td width="50%">
-      <a href="https://imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-hub-dark.svg?v=0e0bac42"><source media="(prefers-color-scheme: light)" srcset="assets/proj-hub-light.svg?v=0e0bac42"><img alt="imswarnil.com — The main desk — writing, videos, courses, projects and travel." src="assets/proj-hub-light.svg?v=0e0bac42" width="100%"></picture></a>
+      <a href="https://imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-hub-dark.svg?v=75293ccc"><source media="(prefers-color-scheme: light)" srcset="assets/proj-hub-light.svg?v=75293ccc"><img alt="imswarnil.com — The main desk — writing, videos, courses, projects and travel." src="assets/proj-hub-light.svg?v=75293ccc" width="100%"></picture></a>
     </td>
     <td width="50%">
-      <a href="https://design.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-fands-dark.svg?v=2ebf91f7"><source media="(prefers-color-scheme: light)" srcset="assets/proj-fands-light.svg?v=2ebf91f7"><img alt="Frame & Signal — Token-first, dependency-free CSS. Near-monochrome, so one colour can mean something." src="assets/proj-fands-light.svg?v=2ebf91f7" width="100%"></picture></a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <a href="https://crmanalytics.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-crma-dark.svg?v=dbd324d1"><source media="(prefers-color-scheme: light)" srcset="assets/proj-crma-light.svg?v=dbd324d1"><img alt="CRM Analytics Academy — A full CRMA curriculum — data prep, SAQL, dashboards, Einstein Discovery. Free forever." src="assets/proj-crma-light.svg?v=dbd324d1" width="100%"></picture></a>
-    </td>
-    <td width="50%">
-      <a href="https://trailblazer.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-trailblazer-dark.svg?v=d5c0a1c1"><source media="(prefers-color-scheme: light)" srcset="assets/proj-trailblazer-light.svg?v=d5c0a1c1"><img alt="Trailblazer — A Jekyll theme for Salesforce developers — lesson player, printable resume, cert wall." src="assets/proj-trailblazer-light.svg?v=d5c0a1c1" width="100%"></picture></a>
+      <a href="https://design.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-fands-dark.svg?v=0886205a"><source media="(prefers-color-scheme: light)" srcset="assets/proj-fands-light.svg?v=0886205a"><img alt="Frame & Signal — Token-first, dependency-free CSS. Near-monochrome, so one colour can mean something." src="assets/proj-fands-light.svg?v=0886205a" width="100%"></picture></a>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <a href="https://imswarnil.github.io"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-index-dark.svg?v=cf1511da"><source media="(prefers-color-scheme: light)" srcset="assets/proj-index-light.svg?v=cf1511da"><img alt="The index — A bento grid of everything. No CMS, no post pages. Linktree, built properly." src="assets/proj-index-light.svg?v=cf1511da" width="100%"></picture></a>
+      <a href="https://crmanalytics.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-crma-dark.svg?v=4b592e0b"><source media="(prefers-color-scheme: light)" srcset="assets/proj-crma-light.svg?v=4b592e0b"><img alt="CRM Analytics Academy — A full CRMA curriculum — data prep, SAQL, dashboards, Einstein Discovery. Free forever." src="assets/proj-crma-light.svg?v=4b592e0b" width="100%"></picture></a>
     </td>
     <td width="50%">
-      <a href="https://jobseekers.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-jobs-dark.svg?v=50519e0f"><source media="(prefers-color-scheme: light)" srcset="assets/proj-jobs-light.svg?v=50519e0f"><img alt="Job Seekers Guide — Notes and tooling for people job-hunting in the Salesforce ecosystem." src="assets/proj-jobs-light.svg?v=50519e0f" width="100%"></picture></a>
+      <a href="https://trailblazer.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-trailblazer-dark.svg?v=2d4bce6a"><source media="(prefers-color-scheme: light)" srcset="assets/proj-trailblazer-light.svg?v=2d4bce6a"><img alt="Trailblazer — A Jekyll theme for Salesforce developers — lesson player, printable resume, cert wall." src="assets/proj-trailblazer-light.svg?v=2d4bce6a" width="100%"></picture></a>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <a href="https://salesforce.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-psk-dark.svg?v=1dd50c7d"><source media="(prefers-color-scheme: light)" srcset="assets/proj-psk-light.svg?v=1dd50c7d"><img alt="Passport Seva Kendra — A public-service workflow, modelled properly on the platform." src="assets/proj-psk-light.svg?v=1dd50c7d" width="100%"></picture></a>
+      <a href="https://imswarnil.github.io"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-index-dark.svg?v=9aa00e2f"><source media="(prefers-color-scheme: light)" srcset="assets/proj-index-light.svg?v=9aa00e2f"><img alt="The index — A bento grid of everything. No CMS, no post pages. Linktree, built properly." src="assets/proj-index-light.svg?v=9aa00e2f" width="100%"></picture></a>
     </td>
     <td width="50%">
-      <a href="https://github.com/imswarnil/No-AI-Content"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-noai-dark.svg?v=7b97e270"><source media="(prefers-color-scheme: light)" srcset="assets/proj-noai-light.svg?v=7b97e270"><img alt="No AI Content — A badge and a position, for people who still write it themselves." src="assets/proj-noai-light.svg?v=7b97e270" width="100%"></picture></a>
+      <a href="https://jobseekers.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-jobs-dark.svg?v=8b2fed73"><source media="(prefers-color-scheme: light)" srcset="assets/proj-jobs-light.svg?v=8b2fed73"><img alt="Job Seekers Guide — Notes and tooling for people job-hunting in the Salesforce ecosystem." src="assets/proj-jobs-light.svg?v=8b2fed73" width="100%"></picture></a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <a href="https://salesforce.imswarnil.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-psk-dark.svg?v=3890a5a2"><source media="(prefers-color-scheme: light)" srcset="assets/proj-psk-light.svg?v=3890a5a2"><img alt="Passport Seva Kendra — A public-service workflow, modelled properly on the platform." src="assets/proj-psk-light.svg?v=3890a5a2" width="100%"></picture></a>
+    </td>
+    <td width="50%">
+      <a href="https://github.com/imswarnil/No-AI-Content"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/proj-noai-dark.svg?v=9f7a88c9"><source media="(prefers-color-scheme: light)" srcset="assets/proj-noai-light.svg?v=9f7a88c9"><img alt="No AI Content — A badge and a position, for people who still write it themselves." src="assets/proj-noai-light.svg?v=9f7a88c9" width="100%"></picture></a>
     </td>
   </tr>
 </table>
