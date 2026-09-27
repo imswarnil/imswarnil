@@ -99,7 +99,7 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 
 ## The numbers
 
-<div align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg?v=71c436ff"><source media="(prefers-color-scheme: light)" srcset="assets/stats-light.svg?v=71c436ff"><img alt="GitHub activity for imswarnil" src="assets/stats-light.svg?v=71c436ff" width="100%"></picture></div>
+<div align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg?v=75c743b0"><source media="(prefers-color-scheme: light)" srcset="assets/stats-light.svg?v=75c743b0"><img alt="GitHub activity for imswarnil" src="assets/stats-light.svg?v=75c743b0" width="100%"></picture></div>
 
 <sub>Not a third-party widget. <a href="scripts/render.py"><code>scripts/render.py</code></a>
 draws every card on this page from the GitHub API in
