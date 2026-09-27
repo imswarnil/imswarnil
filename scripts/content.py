@@ -6,6 +6,34 @@ ROLE    = "SALESFORCE  ·  GTM ENGINEERING  ·  7 YEARS"
 PLACE   = "BUDAPEST  ·  HUNGARY"
 CHIPS   = ["Engineer", "YouTuber", "Creator", "Trailblazer"]
 
+# The hero sets the last phrase of the tagline in Geist Pixel, the way the h1 on
+# design.imswarnil.com does: one phrase, once. TAGLINE_HEAD + TAGLINE_PIXEL must
+# reassemble into TAGLINE.
+TAGLINE_HEAD  = "I slap keyboard &"
+TAGLINE_PIXEL = "talk to camera."
+
+# One paragraph under the headline. readme.py prints the same text as prose, so
+# the card and the page cannot drift.
+LEDE = ("Salesforce engineer, seven years deep in go-to-market: pipeline, funnel, CPQ, "
+        "forecasting and product-usage data turned into dashboards people actually open. "
+        "Off the clock I build one corner of the internet end to end — the site, the theme "
+        "it runs on, the design system under the theme, and the courses on top.")
+
+# The two the hero leads with; the full set stays in SOCIAL below.
+CTA_PRIMARY = ("imswarnil.com", "https://imswarnil.com")
+CTA_SECOND  = ("the index", "https://imswarnil.github.io")
+
+# ── the bands of the page ────────────────────────────────────────────────────
+# index, slug, title, CTA. Numbered because every band on design.imswarnil.com is;
+# readme.py draws the head and the heading from this one list.
+SECTIONS = [
+    ("01", "building",   "CURRENTLY BUILDING", "github.com/imswarnil"),
+    ("02", "live",       "LIVE",               "imswarnil.com"),
+    ("03", "experience", "EXPERIENCE",         "in/imswarnil"),
+    ("04", "skills",     "SKILLS",             ""),
+    ("05", "numbers",    "THE NUMBERS",        ""),
+]
+
 # ── social ───────────────────────────────────────────────────────────────────
 # slug, icon key, handle, url. Add a line, get a linked pill.
 SOCIAL = [

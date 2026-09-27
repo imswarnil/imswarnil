@@ -70,7 +70,12 @@ def _theme(canvas, surface, surface_2, surface_3, ink, body, muted, faint,
         canvas=canvas, surface=surface, surface_2=surface_2, surface_3=surface_3,
         ink=ink, body=body, muted=muted, faint=faint,
         line=_over(line_from, line_alpha, canvas),
-        accent=ACCENT, on_accent=ON_ACCENT)
+        accent=ACCENT, on_accent=ON_ACCENT,
+        # --im-accent-tint: the accent at 10% over the current canvas. The tinted
+        # badge (im-badge-success and friends) is how the system marks a status it
+        # repeats; solid im-badge-accent is for the one-off, so a column of five
+        # would spend the accent five times over.
+        accent_tint=_over(ACCENT, 0.10, canvas))
 
 
 THEMES = {
@@ -96,16 +101,21 @@ SANS_MED = str(_F / "Geist-Medium.ttf")
 SANS_SEMI = str(_F / "Geist-SemiBold.ttf")
 MONO = str(_F / "GeistMono-Regular.ttf")
 MONO_MED = str(_F / "GeistMono-Medium.ttf")
+# --im-font-pixel, the system's display face. `.im-pixel` on the docs home page
+# resolves to the Square cut (foundation/base/fonts.css), and it is used the way
+# the h1 there uses it: one phrase, once.
+PIXEL = str(_F / "GeistPixel-Square.ttf")
 
 # primitives.css, in px at a 16px root. `display` is the top of its clamp.
 SIZE = dict(xs=12, sm=14, base=16, lg=18, h6=14, h5=16, h4=18, h3=20, h2=24,
             h1=30, display=60, figure=44)
+LEADING = dict(lg=1.55, base=1.6, sm=1.5, display=1.02)
 
 # Tracking is em in CSS and px in a path, so it is multiplied at the call site.
 TIGHT, TIGHTER, WIDE = -0.02, -0.035, 0.04
 CAPTION_TRACKING = 0.08  # .im-caption, layout/page.css
 
-RADIUS = dict(xs=4, sm=6, md=8, lg=12, xl=16, full=999)
+RADIUS = dict(xs=4, sm=6, md=8, lg=12, xl=16, **{"2xl": 24}, full=999)
 SPACE = 4  # --im-space: 0.25rem. Every gap on these cards is a multiple.
 
 

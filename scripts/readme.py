@@ -64,17 +64,27 @@ def social():
     return "<p align=\"center\">\n" + "\n".join(pills) + "\n</p>"
 
 
+def head(slug):
+    """A band's numbered head, drawn — and a real heading.
+
+    The strip already carries the number and the title, so printing `## Title`
+    under it would say everything twice. Wrapping the image in an <h2> instead
+    keeps one copy of the words on screen while GitHub still gets a heading for
+    its outline and its anchor link; the title reaches a screen reader through
+    the alt text, which is why that text is the heading and not decoration.
+    """
+    index, title, _cta = next((i, t, c) for i, s, t, c in C.SECTIONS if s == slug)
+    return f'<h2>{picture(f"head-{slug}", f"{index} — {title.title()}", "100%")}</h2>'
+
+
 def main():
     md = f"""<div align="center">
   <a href="https://imswarnil.com">{picture("header", f"{C.NAME} — {C.TAGLINE}", "100%")}</a>
 </div>
 
-{social()}
+<div align="center">{picture("band", "Building, live, skills and companies, counted", "100%")}</div>
 
-Salesforce engineer, seven years deep in go-to-market: pipeline, funnel, CPQ, forecasting
-and product-usage data turned into dashboards people actually open. Off the clock I build
-one corner of the internet end to end — the site, the theme it runs on, the design system
-under the theme, and the courses on top.
+{social()}
 
 ```
 now      Salesforce Engineer @ Education First · Budapest, Hungary
@@ -83,29 +93,30 @@ making   a Salesforce teaching platform, two design systems, a paid Ghost theme
 rule     tokens are the source of truth; nothing ships with a dependency it didn't need
 ```
 
-## Currently building
+{head("building")}
 
 {grid(C.BUILDING)}
 
-## Live
+{head("live")}
 
 {grid(C.LIVE)}
 
-## Experience
+{head("experience")}
 
 <div align="center">{picture("experience", "Experience — go-to-market engineering", "100%")}</div>
 
-## Skills
+{head("skills")}
 
 <div align="center">{picture("skills", "Skills — GTM, Salesforce, data, web, platform", "100%")}</div>
 
-## The numbers
+{head("numbers")}
 
 <div align="center">{picture("stats", "GitHub activity for imswarnil", "100%")}</div>
 
 <sub>Not a third-party widget. <a href="scripts/render.py"><code>scripts/render.py</code></a>
 draws every card on this page from the GitHub API in
-<a href="https://design.imswarnil.com">Frame &amp; Signal</a> — Geist and Geist Mono, and the
+<a href="https://design.imswarnil.com">Frame &amp; Signal</a> — laid out the way its own home
+page is, in Geist, Geist Mono and one phrase of Geist Pixel, on the
 system's own grey ramp resolved out of <code>oklch()</code> in
 <a href="scripts/tokens.py"><code>scripts/tokens.py</code></a>, because an SVG served through an
 image proxy gets no CSS. The type is converted to outlines so it renders the same everywhere.

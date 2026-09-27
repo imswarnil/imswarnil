@@ -80,37 +80,151 @@ def rule(x1, x2, y, fill):
     return f'<rect x="{x1}" y="{y}" width="{x2 - x1}" height="1" fill="{fill}"/>'
 
 
-# ── banner ───────────────────────────────────────────────────────────────────
-def banner(t):
-    H = 340
-    o, M = [], 26
-    for x, y, dx, dy in ((M, M, 1, 1), (W - M, M, -1, 1),
-                         (M, H - M, 1, -1), (W - M, H - M, -1, -1)):
-        o.append(f'<path d="M{x} {y + dy * 26} L{x} {y} L{x + dx * 26} {y}" fill="none" '
-                 f'stroke="{t["surface_3"]}" stroke-width="2" stroke-linecap="square"/>')
+def outline(x, y, w, h, t, r=None):
+    """im-card-outline — transparent, one hairline. The docs home page is built
+    almost entirely out of these; a filled card is the exception there, not the rule."""
+    r = T.RADIUS["xl"] if r is None else r
+    return (f'<rect x="{x + 0.5}" y="{y + 0.5}" width="{w - 1}" height="{h - 1}" rx="{r}" '
+            f'fill="none" stroke="{t["line"]}"/>')
 
-    rx, ry = 74, 84
-    o.append(f'<circle cx="{rx}" cy="{ry}" r="11" fill="{t["accent"]}" opacity="0.14"/>')
-    o.append(f'<circle cx="{rx}" cy="{ry}" r="5" fill="{t["accent"]}"/>')
-    o.append(caption(C.ROLE, rx + 22, ry + 4.5, t["muted"]))
-    o.append(caption(C.PLACE, W - 74 - caption_w(C.PLACE), ry + 4.5, t["muted"]))
 
-    o.append(text(C.NAME, SANS_SEMI, SZ["display"], 72, 190, t["ink"], T.TIGHTER))
-    o.append(text(C.TAGLINE, SANS_MED, SZ["h2"], 74, 232, t["body"], T.TIGHT))
-    tw = measure(C.TAGLINE, SANS_MED, SZ["h2"], T.track(SZ["h2"], T.TIGHT))
-    o.append(text(".", SANS_MED, SZ["h2"], 74 + tw, 232, t["accent"]))
+def bg_grid(w, h, t, pitch=40, x=0, y=0, pid="grid"):
+    """im-bg-grid — drafting paper, at the utility's own 2.5rem pitch."""
+    return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
+            f'patternUnits="userSpaceOnUse" patternTransform="translate(-1 -1)">'
+            f'<path d="M{pitch} 0 L0 0 0 {pitch}" fill="none" stroke="{t["line"]}" '
+            f'stroke-width="1"/></pattern></defs>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
 
-    x, y = 72, 264
-    for c in C.CHIPS:
-        parts, cw = chip(c, x, y, t)
+
+def bg_lines(w, h, t, x=0, y=0, pitch=8, pid="hatch"):
+    """im-bg-lines — a 135° hatch, the filler the docs put beside a split section."""
+    return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
+            f'patternUnits="userSpaceOnUse" patternTransform="rotate(135)">'
+            f'<line x1="0" y1="0" x2="0" y2="{pitch}" stroke="{t["line"]}" '
+            f'stroke-width="1"/></pattern></defs>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
+
+
+def badge(s, x, y, t, accent=False):
+    """im-badge. Accent for the one thing that is live work; outline for the rest."""
+    h, size = 22, SZ["xs"]
+    w = measure(s, MONO_MED, size) + 20
+    if accent:
+        box = (f'<rect x="{x}" y="{y}" width="{w:.1f}" height="{h}" '
+               f'rx="{T.RADIUS["sm"]}" fill="{t["accent_tint"]}"/>')
+        fg = t["accent"]
+    else:
+        box = outline(x, y, w, h, t, r=T.RADIUS["sm"])
+        fg = t["muted"]
+    return [box, text(s, MONO_MED, size, x + 10, y + h / 2 + 4.3, fg)], w
+
+
+def eyebrow(index, label, x, y, t):
+    """im-caption with data-index — the number in the accent, then the label.
+
+    This is the thing that makes a page on design.imswarnil.com recognisable as
+    one: every band is numbered, and the number is the only accent in the row.
+    """
+    o = [caption(index, x, y, t["accent"])]
+    return o + [caption(label, x + caption_w(index) + 14, y, t["muted"])], None
+
+
+def arrow(x, y, t, size=11):
+    """The ↗ the docs put on a card that leaves the page."""
+    return (f'<path d="M{x} {y + size} L{x + size} {y} M{x + size - 8} {y} H{x + size} '
+            f'V{y + 8}" fill="none" stroke="{t["faint"]}" stroke-width="1.6" '
+            f'stroke-linecap="square"/>')
+
+
+# ── hero ─────────────────────────────────────────────────────────────────────
+def button(s, x, y, t, primary=False, h=44):
+    """im-btn-lg. Primary is the accent; the second is im-btn-ink."""
+    size = SZ["sm"]
+    label = f"{s}  →"
+    w = measure(label, SANS_MED, size) + 48
+    bg, fg = (t["accent"], t["on_accent"]) if primary else (t["ink"], t["canvas"])
+    return [f'<rect x="{x}" y="{y}" width="{w:.1f}" height="{h}" '
+            f'rx="{T.RADIUS["md"]}" fill="{bg}"/>',
+            text(label, SANS_MED, size, x + 24, y + h / 2 + 5, fg)], w
+
+
+def hero(t):
+    """The home hero: drafting paper, a numbered eyebrow, the headline with one
+    phrase in the pixel face, a lede, and a cluster of two buttons."""
+    H, L, R = 440, GUTTER, W - GUTTER
+    o = [bg_grid(W, H, t), outline(0, 0, W, H, t, r=T.RADIUS["2xl"])]
+
+    o += eyebrow("00", C.ROLE, L, 66, t)[0]
+    o.append(caption(C.PLACE, R - caption_w(C.PLACE), 66, t["muted"]))
+
+    o.append(text(C.NAME, SANS_SEMI, SZ["display"], L, 148, t["ink"], T.TIGHTER))
+
+    head, pix, size = C.TAGLINE_HEAD, C.TAGLINE_PIXEL, 30
+    o.append(text(head, SANS_MED, size, L, 196, t["body"], T.TIGHT))
+    hw = measure(head, SANS_MED, size, T.track(size, T.TIGHT))
+    o.append(text(pix, T.PIXEL, size, L + hw + 12, 196, t["accent"]))
+
+    y = 246
+    for line in wrap(C.LEDE, SANS, SZ["lg"], 760):
+        o.append(text(line, SANS, SZ["lg"], L, y, t["body"]))
+        y += round(SZ["lg"] * T.LEADING["lg"])
+
+    by = y + 16
+    x = L
+    for (label, _url), primary in ((C.CTA_PRIMARY, True), (C.CTA_SECOND, False)):
+        parts, bw = button(label, x, by, t, primary)
         o += parts
-        x += cw + 2 * T.SPACE
+        x += bw + 3 * T.SPACE
 
-    for i in range(9):
-        o.append(f'<rect x="{W - 74 - i * 13:.0f}" y="{y + 6}" width="3" height="14" rx="1.5" '
-                 f'fill="{t["accent"] if i == 3 else t["surface_3"]}"/>')
+    cx = R
+    for c in reversed(C.CHIPS):
+        parts, cw = chip(c, 0, 0, t)
+        cx -= cw
+        parts, _ = chip(c, cx, by + 8, t)
+        o += parts
+        cx -= 2 * T.SPACE
 
     return svg(W, H, t["canvas"], f"{C.NAME} — {C.TAGLINE}", o)
+
+
+# ── stat band ────────────────────────────────────────────────────────────────
+def band(t):
+    """Four outline cards with a figure apiece — the row the docs home page puts
+    directly under its hero. Every number is counted from content.py."""
+    # The cards are their own image, stacked straight under the hero's, so the
+    # gap between the two bands has to live inside this one — nothing in a README
+    # puts space between two <img>. It is --im-grid-gap, the same gap as between
+    # the cards themselves.
+    gap = 6 * T.SPACE
+    TOP = gap
+    H, L, R = 132 + TOP, GUTTER, W - GUTTER
+    cw = (R - L - 3 * gap) / 4
+    figures = [(str(len(C.BUILDING)), "BUILDING"),
+               (str(len(C.LIVE)), "LIVE"),
+               (str(sum(len(items) for _g, items in C.SKILLS)), "SKILLS"),
+               (str(len(C.ROLES)), "COMPANIES")]
+    o = []
+    for i, (value, label) in enumerate(figures):
+        x = L + i * (cw + gap)
+        o.append(outline(x, TOP, cw, H - TOP, t))
+        o.append(text(value, SANS_SEMI, SZ["figure"], x + 28, TOP + 76, t["accent"] if i == 0
+                      else t["ink"], T.TIGHTER))
+        o.append(caption(label, x + 28, TOP + 104, t["muted"]))
+    return svg(W, H, t["canvas"], "By the numbers", o)
+
+
+# ── section head ─────────────────────────────────────────────────────────────
+def section_head(index, title, cta, t):
+    """home-head — the numbered caption, a hairline across, and a CTA on the right."""
+    H, L, R = 56, GUTTER, W - GUTTER
+    o = eyebrow(index, title, L, 22, t)[0]
+    left = L + caption_w(index) + 14 + caption_w(title) + 24
+    o.append(rule(left, R - (caption_w(cta) + 24 if cta else 0), 18, t["line"]))
+    if cta:
+        o.append(caption(cta, R - caption_w(cta) - 16, 22, t["ink"]))
+        o.append(text("→", MONO_MED, SZ["xs"], R - 12, 22, t["accent"]))
+    return svg(W, H, t["canvas"], title, o)
 
 
 # ── social pills ─────────────────────────────────────────────────────────────
@@ -194,22 +308,24 @@ def experience_card(t):
 
 # ── project tiles ────────────────────────────────────────────────────────────
 def project_tile(title, blurb, stack, status, t):
-    TW, TH, P = 580, 190, 7 * T.SPACE
-    building = status == "building"
-    o = [f'<rect x="0.5" y="0.5" width="{TW - 1}" height="{TH - 1}" rx="{T.RADIUS["xl"]}" '
-         f'fill="{t["surface"]}" stroke="{t["line"]}"/>',
-         f'<circle cx="{P + 4}" cy="34" r="4" '
-         f'fill="{t["accent"] if building else t["surface_3"]}"/>',
-         caption(status.upper(), P + 17, 38, t["accent"] if building else t["muted"]),
-         f'<path d="M{TW - P - 13} 40 L{TW - P} 27 M{TW - P - 8} 27 H{TW - P} V35" fill="none" '
-         f'stroke="{t["faint"]}" stroke-width="1.6" stroke-linecap="square"/>',
-         text(title, SANS_SEMI, SZ["h2"], P, 88, t["ink"], T.TIGHT)]
+    """im-card-outline im-card-link: a badge, a title, two lines and the stack.
 
-    y = 120
+    Outline rather than filled, because that is what the docs home page is made
+    of — a grid of hairlines on the canvas, not a wall of grey panels.
+    """
+    TW, TH, P = 580, 200, 7 * T.SPACE
+    building = status == "building"
+    o = [outline(0, 0, TW, TH, t)]
+    o += badge(status.upper(), P, 26, t, accent=building)[0]
+    o.append(arrow(TW - P - 12, 28, t))
+    o.append(text(title, SANS_SEMI, SZ["h2"], P, 96, t["ink"], T.TIGHT))
+
+    y = 128
     for line in wrap(blurb, SANS, SZ["sm"], TW - 2 * P)[:2]:
         o.append(text(line, SANS, SZ["sm"], P, y, t["body"]))
-        y += 21
-    o.append(text(stack, MONO, SZ["xs"], P, TH - 28, t["muted"], T.WIDE))
+        y += round(SZ["sm"] * T.LEADING["sm"])
+    o.append(rule(P, TW - P, TH - 46, t["line"]))
+    o.append(text(stack, MONO, SZ["xs"], P, TH - 24, t["muted"], T.WIDE))
     return svg(TW, TH, t["canvas"], f"{title} — {blurb}", o)
 
 
@@ -329,7 +445,10 @@ def main():
 
     for theme in THEME_NAMES:
         t = T.THEMES[theme]
-        write(f"header-{theme}.svg", banner(t))
+        write(f"header-{theme}.svg", hero(t))
+        write(f"band-{theme}.svg", band(t))
+        for index, slug, title, cta in C.SECTIONS:
+            write(f"head-{slug}-{theme}.svg", section_head(index, title, cta, t))
         write(f"skills-{theme}.svg", skills_card(t))
         write(f"experience-{theme}.svg", experience_card(t))
         for slug, icon, handle, _url, primary in C.SOCIAL:

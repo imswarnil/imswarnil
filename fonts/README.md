@@ -14,8 +14,13 @@ system it is drawn in are the same page in the same voice.
 | `Geist-SemiBold.ttf` | Geist | 600 | SIL Open Font Licence 1.1 |
 | `GeistMono-Regular.ttf` | Geist Mono | 400 | SIL Open Font Licence 1.1 |
 | `GeistMono-Medium.ttf` | Geist Mono | 500 | SIL Open Font Licence 1.1 |
+| `GeistPixel-Square.ttf` | Geist Pixel | — | SIL Open Font Licence 1.1 |
 
 `Geist-OFL.txt` is the licence, copied unmodified from upstream.
+
+Geist Pixel is the system's display face: `--im-font-pixel`, which `.im-pixel` on
+design.imswarnil.com resolves to the **Square** cut (`foundation/base/fonts.css`).
+It ships static, so it is converted from woff2 to ttf and not instanced.
 
 ## Why static weights
 
