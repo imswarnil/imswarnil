@@ -1,4 +1,4 @@
-"""Frame & Signal, resolved to values an SVG can use.
+"""Im Design System, resolved to values an SVG can use.
 
 design.imswarnil.com is CSS: custom properties, `oklch()`, `color-mix()`. An SVG
 served through GitHub's image proxy gets none of that — no cascade, no
@@ -17,6 +17,9 @@ Three steps, in the order the system defines them:
               light and dark.
   BRAND       one accent. Near-monochrome is the point: a single hue, rationed,
               so that when it appears it means something.
+  GRID        the twelve columns, drawn: one hairline down the middle of every
+              gutter plus one at each outer edge (`layout/guides.css`), in
+              `--im-guide-line`, a very light black — a faint white in dark.
 
 `--im-line` is a `color-mix()` with `transparent`. SVG has no compositing model
 worth trusting through a proxy, so it is flattened over its own canvas here —
@@ -65,11 +68,12 @@ ON_ACCENT = "#ffffff"
 
 # ── semantic ─────────────────────────────────────────────────────────────────
 def _theme(canvas, surface, surface_2, surface_3, ink, body, muted, faint,
-           line_from, line_alpha):
+           line_from, line_alpha, guide_from, guide_alpha):
     return dict(
         canvas=canvas, surface=surface, surface_2=surface_2, surface_3=surface_3,
         ink=ink, body=body, muted=muted, faint=faint,
         line=_over(line_from, line_alpha, canvas),
+        guide=_over(guide_from, guide_alpha, canvas),
         accent=ACCENT, on_accent=ON_ACCENT,
         # --im-accent-tint: the accent at 10% over the current canvas. The tinted
         # badge (im-badge-success and friends) is how the system marks a status it
@@ -82,11 +86,13 @@ THEMES = {
     "light": _theme(
         canvas=WHITE, surface=GRAY[100], surface_2=GRAY[200], surface_3=GRAY[300],
         ink=GRAY[950], body=GRAY[600], muted=GRAY[500], faint=GRAY[400],
-        line_from=GRAY[500], line_alpha=0.24),
+        line_from=GRAY[500], line_alpha=0.24,
+        guide_from="#000000", guide_alpha=0.05),
     "dark": _theme(
         canvas=GRAY[950], surface=GRAY[900], surface_2=GRAY[800], surface_3=GRAY[700],
         ink=WHITE, body=GRAY[400], muted=GRAY[500], faint=GRAY[600],
-        line_from=GRAY[400], line_alpha=0.26),
+        line_from=GRAY[400], line_alpha=0.26,
+        guide_from=WHITE, guide_alpha=0.07),
 }
 
 # ── type ─────────────────────────────────────────────────────────────────────
@@ -117,6 +123,14 @@ CAPTION_TRACKING = 0.08  # .im-caption, layout/page.css
 
 RADIUS = dict(xs=4, sm=6, md=8, lg=12, xl=16, **{"2xl": 24}, full=999)
 SPACE = 4  # --im-space: 0.25rem. Every gap on these cards is a multiple.
+
+# ── grid ─────────────────────────────────────────────────────────────────────
+# --im-grid-gap is clamp(1.25rem, 0.9rem + 1.4vw, 2rem): at the 1200px these cards
+# are drawn at it resolves to 31.2px, so it is the 2rem cap near enough, and 2rem
+# is what a reader on a desktop sees. Twelve columns, because twelve takes 2, 3, 4
+# and 6 — every N-up on the page lands on the lines.
+COLUMNS = 12
+GRID_GAP = 8 * SPACE  # 32px
 
 
 def track(size, em):

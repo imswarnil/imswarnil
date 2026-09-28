@@ -3,7 +3,7 @@
 Committed so the SVG build is reproducible and offline — the render step turns text into
 outlines, which needs the actual font files, not a webfont link.
 
-Geist and Geist Mono are the faces [Frame & Signal](https://design.imswarnil.com) is set in
+Geist and Geist Mono are the faces [Im Design System](https://design.imswarnil.com) is set in
 (`--im-font-sans`, `--im-font-mono`). The cards use the same ones, so the profile and the
 system it is drawn in are the same page in the same voice.
 

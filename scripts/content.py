@@ -16,8 +16,19 @@ TAGLINE_PIXEL = "talk to camera."
 # the card and the page cannot drift.
 LEDE = ("Salesforce engineer, seven years deep in go-to-market: pipeline, funnel, CPQ, "
         "forecasting and product-usage data turned into dashboards people actually open. "
-        "Off the clock I build one corner of the internet end to end — the site, the theme "
+        "Off the clock I build one corner of the internet end to end: the site, the theme "
         "it runs on, the design system under the theme, and the courses on top.")
+
+# The hero's right-hand card, the way the docs home puts art beside its copy.
+NOW = ("Salesforce Engineer", "Education First", "Budapest, Hungary")
+
+# The plain-text block under the pills. readme.py prints it verbatim.
+NOW_LINES = [
+    ("now",    "Salesforce Engineer @ Education First · Budapest, Hungary"),
+    ("before", "Twilio · Cognizant · Accenture — GTM analytics, CRM Analytics, CPQ"),
+    ("making", "Im Design System, CreatorKit, an OBS plugin, a Salesforce teaching platform"),
+    ("rule",   "tokens are the source of truth; nothing ships with a dependency it didn't need"),
+]
 
 # The two the hero leads with; the full set stays in SOCIAL below.
 CTA_PRIMARY = ("imswarnil.com", "https://imswarnil.com")
@@ -58,10 +69,10 @@ SKILLS = [
                     "Automation", "Salesforce Admin"]),
     ("DATA", ["SQL", "Snowflake", "JSON", "Qlik Sense migration", "KPI Definition",
               "Dashboard Design", "Python"]),
-    ("WEB", ["JavaScript", "TypeScript", "Vue", "Next.js", "Handlebars", "Tailwind",
-             "Sass", "Design Tokens"]),
-    ("PLATFORM", ["Ghost", "Jekyll", "Supabase", "Postgres", "Vercel", "Cloudflare",
-                  "GitHub Pages", "Git"]),
+    ("WEB", ["JavaScript", "TypeScript", "React", "Vue", "Next.js", "Handlebars",
+             "Tailwind 4", "Sass", "Design Tokens", "C"]),
+    ("PLATFORM", ["Ghost", "Jekyll", "Supabase", "Postgres", "Neon", "Vercel",
+                  "Cloudflare Workers", "GitHub Pages", "OBS Studio", "Git"]),
 ]
 
 # ── experience ───────────────────────────────────────────────────────────────
@@ -95,36 +106,39 @@ BUILDING = [
     ("namaste", "Namaste Salesforce",
      "A Salesforce teaching platform — Ghost theme out front, Next.js LMS behind it.",
      "Handlebars · Next.js", "building", "https://github.com/imswarnil/Namaste-Salesforce"),
-    ("nsds", "NS Design System",
-     "One token set feeding both halves of it, Handlebars and React reading one source.",
-     "Tokens · React", "building", "https://github.com/imswarnil/NSDS-Design-System"),
-    ("ghosttheme", "Swarnil Ghost Theme",
-     "A premium Ghost theme for independent creators, on a two-axis token architecture.",
-     "Ghost 6 · gscan clean", "building", "https://github.com/imswarnil/Swarnil-Ghost-Theme"),
+    ("creatorkit", "CreatorKit",
+     "A React and Tailwind UI kit for people who publish. One recipe, two renderers.",
+     "React · Tailwind · Turborepo", "building", "https://github.com/imswarnil/CreatorKit"),
+    ("scratchpad", "Scratchpad",
+     "A dev portfolio theme. One design, every stack: Jekyll now, then Astro, Hugo, Next.",
+     "Jekyll · MIT", "building", "https://github.com/imswarnil/scratchpad-theme"),
     ("sponsor", "Be My Sponsor",
-     "Single-tenant ad platform — advertisers buy placements on the blog, videos and repos.",
-     "Next.js · Supabase", "building", "https://github.com/imswarnil"),
-    ("onboarding", "Invite-Only Onboarding",
-     "A gated onboarding flow, built as a self-contained portal.",
-     "HTML", "building", "https://github.com/imswarnil/Invite-Only-Onboarding-Portal"),
+     "Brands buy placements, readers become members. Everything disclosed and priced openly.",
+     "Next.js · Supabase", "building", "https://github.com/imswarnil/Sponsor-Me-Platform"),
 ]
 
 LIVE = [
     ("hub", "imswarnil.com",
-     "The main desk — writing, videos, courses, projects and travel.",
-     "Ghost 6 · self-hosted", "live", "https://imswarnil.com"),
-    ("fands", "Frame & Signal",
-     "Token-first, dependency-free CSS. Near-monochrome, so one colour can mean something.",
-     "CSS · 144 doc pages", "live", "https://design.imswarnil.com"),
+     "The main desk: writing, videos, courses, projects and travel. Self-hosted Ghost.",
+     "Ghost 6 · Im Design System", "live", "https://imswarnil.com"),
+    ("im", "Im Design System",
+     "Tailwind 4 for Ghost themes, laid out on a twelve-column grid you can see.",
+     "Tailwind 4 · Ghost 6 · Geist", "live", "https://design.imswarnil.com"),
+    ("obs", "Swarnil Broadcast Kit",
+     "A native OBS Studio plugin. Twenty sources, six filters and a 22-scene show.",
+     "C · libobs · MIT", "live", "https://obs.imswarnil.com"),
     ("crma", "CRM Analytics Academy",
-     "A full CRMA curriculum — data prep, SAQL, dashboards, Einstein Discovery. Free forever.",
+     "A full CRMA curriculum: data prep, SAQL, dashboards, Einstein Discovery. Free forever.",
      "Vue · open source", "live", "https://crmanalytics.imswarnil.com"),
     ("trailblazer", "Trailblazer",
-     "A Jekyll theme for Salesforce developers — lesson player, printable resume, cert wall.",
+     "A Jekyll theme for Salesforce developers: lesson player, printable resume, cert wall.",
      "SCSS · MIT", "live", "https://trailblazer.imswarnil.com"),
+    ("icons", "Swarnil Icons",
+     "61 icons on a 24 grid, drawn from scratch. No dependencies.",
+     "SVG · MIT", "live", "https://icons.imswarnil.com"),
     ("index", "The index",
-     "A bento grid of everything. No CMS, no post pages. Linktree, built properly.",
-     "Jekyll", "live", "https://imswarnil.github.io"),
+     "A bento of everything, every card live: YouTube, GitHub, Ghost, a guestbook.",
+     "Next.js · Cloudflare Workers", "live", "https://imswarnil.github.io"),
     ("jobs", "Job Seekers Guide",
      "Notes and tooling for people job-hunting in the Salesforce ecosystem.",
      "Vue", "live", "https://jobseekers.imswarnil.com"),
@@ -133,5 +147,5 @@ LIVE = [
      "Apex", "live", "https://salesforce.imswarnil.com"),
     ("noai", "No AI Content",
      "A badge and a position, for people who still write it themselves.",
-     "TypeScript", "live", "https://github.com/imswarnil/No-AI-Content"),
+     "TypeScript · Vercel", "live", "https://nac.imswarnil.com"),
 ]

@@ -4,7 +4,7 @@
 <defs><clipPath id="mnamaste"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mnamaste)">
 <rect x="1" y="1" width="578" height="290" fill="#e5e5e5"/>
-<defs><pattern id="pnamaste" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="translate(-1 -1)"><path d="M40 0 L0 0 0 40" fill="none" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pnamaste)"/>
+<defs><pattern id="pnamaste" width="24" height="24" patternUnits="userSpaceOnUse"><rect x="12.0" y="0" width="1" height="24" fill="#d4d4d4"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pnamaste)"/>
 <path d="M255.90 187.76V105.40H273.53L309.02 167.34V105.40H324.10V187.76H306.01L270.98 127.56V187.76Z" fill="#a1a1a1"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#dddddd"/>

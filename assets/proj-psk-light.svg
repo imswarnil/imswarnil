@@ -4,7 +4,7 @@
 <defs><clipPath id="mpsk"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mpsk)">
 <rect x="1" y="1" width="578" height="290" fill="#e5e5e5"/>
-<defs><pattern id="ppsk" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.5" fill="#d4d4d4"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#ppsk)"/>
+<defs><pattern id="ppsk" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="#d4d4d4" stroke-width="1"/><line x1="0" y1="0" x2="16" y2="0" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#ppsk)"/>
 <path d="M260.77 187.76V105.40H292.67Q307.17 105.40 315.29 112.36Q323.41 119.32 323.41 131.62Q323.41 139.85 319.70 145.83Q315.98 151.80 309.14 154.93Q302.30 158.06 292.67 158.06H275.85V187.76ZM275.85 144.96H291.97Q299.63 144.96 303.75 141.59Q307.86 138.23 307.86 131.62Q307.86 125.12 303.75 121.81Q299.63 118.51 291.97 118.51H275.85Z" fill="#a1a1a1"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#dddddd"/>

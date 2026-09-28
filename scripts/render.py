@@ -4,10 +4,13 @@
 Text is converted to outlines at build time, so the cards render identically
 everywhere GitHub serves them — no webfont request, no fallback stack.
 
-Everything the cards are drawn in comes from scripts/tokens.py: Frame & Signal
-(design.imswarnil.com) resolved to values an SVG can hold. Geist and Geist Mono,
-the system's near-monochrome grey ramp, and one orange rationed across the
-page. No colour and no size below is typed by hand.
+Everything the cards are drawn in comes from scripts/tokens.py: Im Design System
+(design.imswarnil.com) resolved to values an SVG can hold. Geist, Geist Mono and
+one phrase of Geist Pixel, the system's near-monochrome grey ramp, one orange
+rationed across the page — and its twelve columns, drawn. Every full-width card
+shares one grid at one width, so the hairlines run unbroken down the README the
+way they run down every page of the docs. No colour and no size below is typed
+by hand.
 
     python3 scripts/render.py                     # everything except the stats card
     python3 scripts/render.py --stats             # stats too (needs GH_TOKEN)
@@ -30,6 +33,20 @@ SZ = T.SIZE
 W = 1200
 GUTTER = 18 * T.SPACE  # 72px — the page margin every card shares
 THEME_NAMES = ("dark", "light")
+
+# The twelve columns every full-width card is measured in. `col(n)` is the left
+# edge of column n (0-based); `span(n)` the width of n columns and the n-1 gaps
+# between them — what `data-span` gives a block on the docs site.
+GAP = T.GRID_GAP
+COL = (W - 2 * GUTTER - (T.COLUMNS - 1) * GAP) / T.COLUMNS
+
+
+def col(n):
+    return GUTTER + n * (COL + GAP)
+
+
+def span(n):
+    return n * COL + (n - 1) * GAP
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -59,11 +76,11 @@ def text(s, font, size, x, y, fill, em=0.0):
     return f'<path d="{path(s, font, size, x, y, T.track(size, em))}" fill="{fill}"/>'
 
 
-def chip(s, x, y, t, h=7 * T.SPACE, size=SZ["xs"]):
-    """im-badge, pill variant: a fill from the surface ramp, no border, ink on it."""
+def chip(s, x, y, t, h=7 * T.SPACE, size=SZ["xs"], fill=None):
+    """im-badge im-badge-pill: a fill from the surface ramp, no border, ink on it."""
     w = measure(s, MONO_MED, size) + 26
     return [f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h / 2}" '
-            f'fill="{t["surface_2"]}"/>',
+            f'fill="{fill or t["surface_2"]}"/>',
             text(s, MONO_MED, size, x + 13, y + h / 2 + 4.5, t["ink"])], w
 
 
@@ -74,6 +91,32 @@ def caption(s, x, y, fill, size=SZ["xs"], font=MONO_MED):
 
 def caption_w(s, size=SZ["xs"], font=MONO_MED):
     return measure(s, font, size, T.track(size, T.CAPTION_TRACKING))
+
+
+def guides(h, t):
+    """im-guides — the twelve columns, drawn behind everything.
+
+    One hairline down the middle of each of the eleven gutters and one at each
+    outer edge to close the frame; never two per column, which drew the columns
+    as boxes. Every full-width card calls this at the same x, so stacked in the
+    README the lines read as one grid running the length of the page.
+    """
+    xs = [GUTTER, W - GUTTER] + [col(i) - GAP / 2 for i in range(1, T.COLUMNS)]
+    return "".join(f'<rect x="{x - 0.5:.2f}" y="0" width="1" height="{h:.0f}" '
+                   f'fill="{t["guide"]}"/>' for x in xs)
+
+
+def ground(x, y, w, h, t):
+    """Words sit ON the grid, not under it: running text gets a canvas ground so
+    the lines show in the gutters and the margins, never through a sentence."""
+    return f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" fill="{t["canvas"]}"/>'
+
+
+def rec_dot(cx, cy, t, r=5):
+    """The recording light — the dot at the top right of the logo's last letter.
+    A ring and a light, drawn once per page; it means *on air*, never *active*."""
+    return (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r * 1.9:.1f}" fill="{t["accent_tint"]}"/>'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r}" fill="{t["accent"]}"/>')
 
 
 def rule(x1, x2, y, fill):
@@ -124,8 +167,17 @@ def bg_dots(w, h, t, x=0, y=0, pitch=16, pid="dots", ink=None):
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
 
 
+def bg_columns(w, h, t, x=0, y=0, pitch=24, pid="cols", ink=None):
+    """im-bg-columns — upright hairlines, the grid's own gesture at thumbnail size."""
+    return (f'<defs><pattern id="{pid}" width="{pitch}" height="{pitch}" '
+            f'patternUnits="userSpaceOnUse">'
+            f'<rect x="{pitch / 2}" y="0" width="1" height="{pitch}" fill="{ink or t["line"]}"/>'
+            f'</pattern></defs>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{pid})"/>')
+
+
 # The pattern families a card falls back to, cycled so neighbours differ.
-PATTERNS = (bg_grid, bg_diamond, bg_lines, bg_dots)
+PATTERNS = (bg_columns, bg_grid, bg_diamond, bg_lines, bg_dots)
 
 
 def shot(slug):
@@ -199,92 +251,128 @@ def arrow(x, y, t, size=11):
 
 
 # ── hero ─────────────────────────────────────────────────────────────────────
-def button(s, x, y, t, primary=False, h=44):
-    """im-btn-lg. Primary is the accent; the second is im-btn-ink."""
+def button(s_, x, y, t, primary=False, h=44):
+    """im-btn im-btn-lg — a pill (`--im-btn-radius: var(--im-radius-full)`).
+    Primary is the accent; the second is the plain im-btn on --im-surface, which
+    is how the docs home pairs them."""
     size = SZ["sm"]
-    label = f"{s}  →"
-    w = measure(label, SANS_MED, size) + 48
-    bg, fg = (t["accent"], t["on_accent"]) if primary else (t["ink"], t["canvas"])
+    label = f"{s_}  →"
+    w = measure(label, SANS_MED, size) + 44
+    bg, fg = (t["accent"], t["on_accent"]) if primary else (t["surface"], t["ink"])
     return [f'<rect x="{x}" y="{y}" width="{w:.1f}" height="{h}" '
-            f'rx="{T.RADIUS["md"]}" fill="{bg}"/>',
-            text(label, SANS_MED, size, x + 24, y + h / 2 + 5, fg)], w
+            f'rx="{h / 2}" fill="{bg}"/>',
+            text(label, SANS_MED, size, x + 22, y + h / 2 + 5, fg)], w
+
+
+def now_card(x, y, w, t):
+    """home-hero-art: an im-card on --im-surface, four columns wide. It covers the
+    lines, as anything with a ground does. What it holds is the one fact a reader
+    wants first — where he is now — and the four hats as pill badges."""
+    P = 6 * T.SPACE
+    role, company, place = C.NOW
+    rows, cx, cy = [], x + P, 0
+    for c in C.CHIPS:
+        _, cw = chip(c, 0, 0, t)
+        if cx + cw > x + w - P:
+            cx, cy = x + P, cy + 9 * T.SPACE
+        rows.append((c, cx, cy))
+        cx += cw + 2 * T.SPACE
+    h = 172 + cy + 7 * T.SPACE + P
+    o = [f'<rect x="{x:.2f}" y="{y}" width="{w:.2f}" height="{h}" rx="{T.RADIUS["xl"]}" '
+         f'fill="{t["surface"]}"/>']
+    o.append(caption("NOW", x + P, y + P + 12, t["muted"]))
+    tail = "ON AIR"
+    o.append(caption(tail, x + w - P - caption_w(tail), y + P + 12, t["muted"]))
+    o.append(rec_dot(x + w - P - caption_w(tail) - 14, y + P + 8, t, r=3.5))
+    o.append(text(role, SANS_SEMI, SZ["h3"], x + P, y + P + 58, t["ink"], T.TIGHT))
+    o.append(text(company, SANS, SZ["base"], x + P, y + P + 84, t["body"]))
+    o.append(caption(place.upper(), x + P, y + P + 110, t["muted"]))
+    o.append(rule(x + P, x + w - P, y + P + 130, t["line"]))
+    for c, cx, cy in rows:
+        o += chip(c, cx, y + P + 148 + cy, t, fill=t["canvas"])[0]
+    return o, h
 
 
 def hero(t):
-    """The home hero: drafting paper, a numbered eyebrow, the headline with one
-    phrase in the pixel face, a lede, and a cluster of two buttons."""
-    H, L, R = 440, GUTTER, W - GUTTER
-    o = [bg_grid(W, H, t), outline(0, 0, W, H, t, r=T.RADIUS["2xl"])]
+    """The home hero, on the grid: a numbered eyebrow, the name at display size
+    with the recording light on its last letter, the tagline with one phrase in
+    Geist Pixel, a lede held to seven columns, a pill cluster — and on the right,
+    four columns of art, the way the docs home sets `home-hero-art`."""
+    H = 452
+    o = [guides(H, t)]
 
-    o += eyebrow("00", C.ROLE, L, 66, t)[0]
-    o.append(caption(C.PLACE, R - caption_w(C.PLACE), 66, t["muted"]))
+    o.append(ground(col(0), 48, caption_w("00") + 14 + caption_w(C.ROLE) + 8, 22, t))
+    o += eyebrow("00", C.ROLE, col(0), 64, t)[0]
 
-    o.append(text(C.NAME, SANS_SEMI, SZ["display"], L, 148, t["ink"], T.TIGHTER))
+    size = SZ["display"]
+    nw = measure(C.NAME, SANS_SEMI, size, T.track(size, T.TIGHTER))
+    o.append(ground(col(0), 96, nw + 30, 66, t))
+    o.append(text(C.NAME, SANS_SEMI, size, col(0), 148, t["ink"], T.TIGHTER))
+    o.append(rec_dot(col(0) + nw + 12, 108, t, r=6))
 
-    head, pix, size = C.TAGLINE_HEAD, C.TAGLINE_PIXEL, 30
-    o.append(text(head, SANS_MED, size, L, 196, t["body"], T.TIGHT))
-    hw = measure(head, SANS_MED, size, T.track(size, T.TIGHT))
-    o.append(text(pix, T.PIXEL, size, L + hw + 12, 196, t["accent"]))
+    head, pix, ts = C.TAGLINE_HEAD, C.TAGLINE_PIXEL, 30
+    hw = measure(head, SANS_MED, ts, T.track(ts, T.TIGHT))
+    pw = measure(pix, T.PIXEL, ts)
+    o.append(ground(col(0), 170, hw + 12 + pw + 8, 40, t))
+    o.append(text(head, SANS_MED, ts, col(0), 200, t["body"], T.TIGHT))
+    o.append(text(pix, T.PIXEL, ts, col(0) + hw + 12, 200, t["accent"]))
 
-    y = 246
-    for line in wrap(C.LEDE, SANS, SZ["lg"], 760):
-        o.append(text(line, SANS, SZ["lg"], L, y, t["body"]))
-        y += round(SZ["lg"] * T.LEADING["lg"])
+    lines = wrap(C.LEDE, SANS, SZ["lg"], span(7))
+    lead = round(SZ["lg"] * T.LEADING["lg"])
+    o.append(ground(col(0), 228, span(7), lead * len(lines) + 8, t))
+    y = 252
+    for line in lines:
+        o.append(text(line, SANS, SZ["lg"], col(0), y, t["body"]))
+        y += lead
 
-    by = y + 16
-    x = L
+    by, x = y + 14, col(0)
     for (label, _url), primary in ((C.CTA_PRIMARY, True), (C.CTA_SECOND, False)):
         parts, bw = button(label, x, by, t, primary)
         o += parts
         x += bw + 3 * T.SPACE
 
-    cx = R
-    for c in reversed(C.CHIPS):
-        parts, cw = chip(c, 0, 0, t)
-        cx -= cw
-        parts, _ = chip(c, cx, by + 8, t)
-        o += parts
-        cx -= 2 * T.SPACE
-
-    return svg(W, H, t["canvas"], f"{C.NAME} — {C.TAGLINE}", o)
+    card, ch = now_card(col(8), 186, span(4), t)
+    o += card
+    return svg(W, max(H, 186 + ch + 40), t["canvas"], f"{C.NAME} — {C.TAGLINE}", o)
 
 
 # ── stat band ────────────────────────────────────────────────────────────────
 def band(t):
     """Four outline cards with a figure apiece — the row the docs home page puts
-    directly under its hero. Every number is counted from content.py."""
-    # The cards are their own image, stacked straight under the hero's, so the
-    # gap between the two bands has to live inside this one — nothing in a README
-    # puts space between two <img>. It is --im-grid-gap, the same gap as between
-    # the cards themselves.
-    gap = 6 * T.SPACE
-    TOP = gap
-    H, L, R = 132 + TOP, GUTTER, W - GUTTER
-    cw = (R - L - 3 * gap) / 4
-    figures = [(str(len(C.BUILDING)), "BUILDING"),
+    directly under its hero, three columns each (`im-grid-span-3`). Every number
+    is counted from content.py."""
+    H = 156
+    o = [guides(H, t)]
+    figures = [(str(len(C.BUILDING)), "BUILDING NOW"),
                (str(len(C.LIVE)), "LIVE"),
                (str(sum(len(items) for _g, items in C.SKILLS)), "SKILLS"),
                (str(len(C.ROLES)), "COMPANIES")]
-    o = []
     for i, (value, label) in enumerate(figures):
-        x = L + i * (cw + gap)
-        o.append(outline(x, TOP, cw, H - TOP, t))
-        o.append(text(value, SANS_SEMI, SZ["figure"], x + 28, TOP + 76, t["accent"] if i == 0
+        x = col(3 * i)
+        o.append(outline(x, 12, span(3), H - 24, t))
+        o.append(text(value, SANS_SEMI, SZ["figure"], x + 28, 88, t["accent"] if i == 0
                       else t["ink"], T.TIGHTER))
-        o.append(caption(label, x + 28, TOP + 104, t["muted"]))
+        o.append(caption(label, x + 28, 116, t["muted"]))
     return svg(W, H, t["canvas"], "By the numbers", o)
 
 
 # ── section head ─────────────────────────────────────────────────────────────
 def section_head(index, title, cta, t):
-    """home-head — the numbered caption, a hairline across, and a CTA on the right."""
-    H, L, R = 56, GUTTER, W - GUTTER
-    o = eyebrow(index, title, L, 22, t)[0]
-    left = L + caption_w(index) + 14 + caption_w(title) + 24
-    o.append(rule(left, R - (caption_w(cta) + 24 if cta else 0), 18, t["line"]))
+    """home-head — the numbered caption, a hairline across, a CTA on the right.
+    The caption sits on the grid; only the words get a ground."""
+    H, L, R = 64, col(0), col(12) - GAP
+    o = [guides(H, t)]
+    lw = caption_w(index) + 14 + caption_w(title)
+    o.append(ground(L, 16, lw + 16, 22, t))
+    o += eyebrow(index, title, L, 32, t)[0]
+    left = L + lw + 24
+    right = R - (caption_w(cta) + 40 if cta else 0)
+    o.append(rule(left, right, 27, t["line"]))
     if cta:
-        o.append(caption(cta, R - caption_w(cta) - 16, 22, t["ink"]))
-        o.append(text("→", MONO_MED, SZ["xs"], R - 12, 22, t["accent"]))
+        cx = R - caption_w(cta) - 16
+        o.append(ground(cx - 8, 16, R - cx + 8, 22, t))
+        o.append(caption(cta, cx, 32, t["ink"]))
+        o.append(text("→", MONO_MED, SZ["xs"], R - 12, 32, t["accent"]))
     return svg(W, H, t["canvas"], title, o)
 
 
@@ -304,67 +392,84 @@ def social_pill(icon, handle, primary, t):
 
 # ── skills ───────────────────────────────────────────────────────────────────
 def skills_card(t):
-    L, R, LABEL_W = GUTTER, W - GUTTER, 200
-    GAP, ROW = 2 * T.SPACE, 9 * T.SPACE
-    body, y = [], 58
+    """Label in columns one and two, chips from column three to the edge. Every
+    chip has a ground, so it covers the lines it sits across."""
+    L, R, X0 = col(0), col(12) - GAP, col(2)
+    GAP_, ROW = 2 * T.SPACE, 9 * T.SPACE
+    body, y = [], 36
     for i, (group, items) in enumerate(C.SKILLS):
         if i:
             y += 14
             body.append(rule(L, R, y - 24, t["line"]))
-        top, x = y, L + LABEL_W
+        top, x = y, X0
         for item in items:
             parts, cw = chip(item, x, y, t)
             if x + cw > R:
-                x, y = L + LABEL_W, y + ROW
+                x, y = X0, y + ROW
                 parts, cw = chip(item, x, y, t)
             body += parts
-            x += cw + GAP
+            x += cw + GAP_
+        body.append(ground(L, top + 4, caption_w(group) + 8, 20, t))
         body.append(caption(group, L, top + 19, t["accent"] if i == 0 else t["muted"]))
         y += ROW
-    return svg(W, y + 18, t["canvas"], "Skills",
-               [caption("SKILLS", L, 32, t["muted"])] + body)
+    H = y + 18
+    return svg(W, H, t["canvas"], "Skills", [guides(H, t)] + body)
 
 
 # ── experience ───────────────────────────────────────────────────────────────
 def experience_card(t):
-    L, R = GUTTER, W - GUTTER
-    o = [caption("EXPERIENCE  ·  GO-TO-MARKET ENGINEERING", L, 34, t["muted"])]
+    """The CV on the grid: years in columns one and two, the role from column
+    three, the place flush to the last line. The summary and the selected work
+    are running text, held to eight columns and given a ground."""
+    L, R = col(0), col(12) - GAP
+    body, o = [], []
 
-    y = 68
-    for line in wrap(C.SUMMARY, SANS, SZ["base"], R - L):
-        o.append(text(line, SANS, SZ["base"], L, y, t["body"]))
-        y += 26  # --im-leading-base, 1.6
+    y = 30
+    lines = wrap(C.SUMMARY, SANS, SZ["lg"], span(8))
+    lead = round(SZ["lg"] * T.LEADING["lg"])
+    o.append(ground(L, y - 22, span(8), lead * len(lines) + 12, t))
+    for line in lines:
+        o.append(text(line, SANS, SZ["lg"], L, y, t["body"]))
+        y += lead
     y += 12
     o.append(rule(L, R, y, t["line"]))
-    y += 34
+    y += 40
 
     for years, role, company, place, current in C.ROLES:
-        o.append(caption(years, L, y, t["accent"] if current else t["muted"]))
-        o.append(text(role, SANS_SEMI, SZ["h4"], L + 150, y, t["ink"], T.TIGHT))
         rw = measure(role, SANS_SEMI, SZ["h4"], T.track(SZ["h4"], T.TIGHT))
-        o.append(text("· " + company, SANS, SZ["h4"], L + 150 + rw + 10, y, t["body"]))
+        cw = measure("· " + company, SANS, SZ["h4"])
+        o.append(ground(L, y - 20, caption_w(years) + 8, 28, t))
+        o.append(ground(col(2) - 4, y - 20, rw + cw + 22, 28, t))
+        o.append(ground(R - caption_w(place) - 8, y - 20, caption_w(place) + 8, 28, t))
+        o.append(caption(years, L, y, t["accent"] if current else t["muted"]))
+        o.append(text(role, SANS_SEMI, SZ["h4"], col(2), y, t["ink"], T.TIGHT))
+        o.append(text("· " + company, SANS, SZ["h4"], col(2) + rw + 10, y, t["body"]))
         o.append(caption(place, R - caption_w(place), y, t["muted"]))
-        y += 10 * T.SPACE
+        y += 11 * T.SPACE
 
-    y += 4
-    o.append(rule(L, R, y, t["line"]))
-    y += 34
+    o.append(rule(L, R, y - 10, t["line"]))
+    y += 30
+    o.append(ground(L, y - 16, caption_w("SELECTED WORK") + 8, 22, t))
     o.append(caption("SELECTED WORK", L, y, t["muted"]))
-    y += 26
 
     for item in C.HIGHLIGHTS:
-        o.append(f'<rect x="{L}" y="{y - 9}" width="10" height="2" fill="{t["accent"]}"/>')
-        for line in wrap(item, SANS, SZ["sm"], R - L - 26):
-            o.append(text(line, SANS, SZ["sm"], L + 26, y, t["body"]))
-            y += 21  # --im-leading-sm, 1.5
-        y += 10
+        lines = wrap(item, SANS, SZ["sm"], span(8) - 26)
+        top = y + 10
+        o.append(ground(col(2) - 4, top, span(8) + 4, len(lines) * 21 + 14, t))
+        yy = top + 24
+        o.append(f'<rect x="{col(2)}" y="{yy - 9}" width="10" height="2" fill="{t["accent"]}"/>')
+        for line in lines:
+            o.append(text(line, SANS, SZ["sm"], col(2) + 26, yy, t["body"]))
+            yy += 21  # --im-leading-sm, 1.5
+        y = yy - 6
 
-    y += 4
+    y += 18
     o.append(rule(L, R, y, t["line"]))
-    y += 30
+    y += 34
+    o.append(ground(L, y - 16, caption_w(C.EDUCATION) + 8, 22, t))
     o.append(caption(C.EDUCATION, L, y, t["muted"]))
-
-    return svg(W, y + 30, t["canvas"], "Experience", o)
+    H = y + 30
+    return svg(W, H, t["canvas"], "Experience", [guides(H, t)] + o)
 
 
 # ── project tiles ────────────────────────────────────────────────────────────
@@ -457,19 +562,26 @@ def shape(payload):
 
 
 def stats_card(t, data):
-    H, L, R = 300, GUTTER, W - GUTTER
-    o = [caption(f'SNAPSHOT  ·  {data["stamped"]}', L, 44, t["muted"])]
+    """Four figures, three columns each, and the language bar across all twelve."""
+    H, L, R = 300, col(0), col(12) - GAP
+    o = [guides(H, t)]
+    head = f'SNAPSHOT  ·  {data["stamped"]}'
     tail = "GITHUB.COM/IMSWARNIL"
+    o.append(ground(L, 28, caption_w(head) + 8, 22, t))
+    o.append(ground(R - caption_w(tail) - 8, 28, caption_w(tail) + 8, 22, t))
+    o.append(caption(head, L, 44, t["muted"]))
     o.append(caption(tail, R - caption_w(tail), 44, t["muted"]))
     o.append(rule(L, R, 60, t["line"]))
 
-    col = (R - L) / 4
     for i, (value, lab) in enumerate(data["stats"]):
-        x = L + i * col
+        x = col(3 * i)
+        vw = measure(value, SANS_SEMI, SZ["figure"], T.track(SZ["figure"], T.TIGHTER))
+        o.append(ground(x, 84, max(vw, caption_w(lab)) + 12, 76, t))
         o.append(text(value, SANS_SEMI, SZ["figure"], x, 124,
                       t["accent"] if i == 0 else t["ink"], T.TIGHTER))
         o.append(caption(lab, x + 2, 152, t["muted"]))
 
+    o.append(ground(L, 186, caption_w("LANGUAGES BY VOLUME") + 8, 22, t))
     o.append(caption("LANGUAGES BY VOLUME", L, 202, t["muted"]))
     by, bh = 216, 10
     o.append(f'<clipPath id="bar"><rect x="{L}" y="{by}" width="{R - L}" height="{bh}" '
@@ -486,9 +598,11 @@ def stats_card(t, data):
     x = float(L)
     for name, pct, color in data["langs"]:
         lab = f"{name}  {pct:.0f}%"
+        lw = measure(lab, MONO, SZ["xs"])
+        o.append(ground(x - 4, by + 32, lw + 28, 24, t))
         o.append(f'<circle cx="{x + 4:.1f}" cy="{by + 44}" r="4" fill="{color}"/>')
         o.append(text(lab, MONO, SZ["xs"], x + 16, by + 48.5, t["body"]))
-        x += measure(lab, MONO, SZ["xs"]) + 42
+        x += lw + 42
 
     return svg(W, H, t["canvas"], "GitHub activity for imswarnil", o)
 

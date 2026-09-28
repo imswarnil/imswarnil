@@ -4,7 +4,7 @@
 <defs><clipPath id="mjobs"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mjobs)">
 <rect x="1" y="1" width="578" height="290" fill="#262626"/>
-<defs><pattern id="pjobs" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(135)"><line x1="0" y1="0" x2="0" y2="8" stroke="#404040" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pjobs)"/>
+<defs><pattern id="pjobs" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="translate(-1 -1)"><path d="M40 0 L0 0 0 40" fill="none" stroke="#404040" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pjobs)"/>
 <path d="M289.48 189.62Q280.55 189.62 274.05 185.73Q267.55 181.84 264.13 174.94Q260.71 168.04 260.59 159.22L275.79 158.41Q276.02 167.46 279.56 171.98Q283.10 176.51 289.48 176.51Q295.97 176.51 299.57 171.93Q303.17 167.34 303.17 158.41V105.40H318.25V158.41Q318.25 167.92 314.65 174.94Q311.05 181.96 304.62 185.79Q298.18 189.62 289.48 189.62Z" fill="#525252"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#313131"/>

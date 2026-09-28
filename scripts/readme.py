@@ -77,6 +77,11 @@ def head(slug):
     return f'<h2>{picture(f"head-{slug}", f"{index} — {title.title()}", "100%")}</h2>'
 
 
+def now_block():
+    w = max(len(k) for k, _ in C.NOW_LINES) + 3
+    return "\n".join(f"{k.ljust(w)}{v}" for k, v in C.NOW_LINES)
+
+
 def main():
     md = f"""<div align="center">
   <a href="https://imswarnil.com">{picture("header", f"{C.NAME} — {C.TAGLINE}", "100%")}</a>
@@ -87,10 +92,7 @@ def main():
 {social()}
 
 ```
-now      Salesforce Engineer @ Education First · Budapest, Hungary
-before   Twilio · Cognizant · Accenture — GTM analytics, CRM Analytics, CPQ
-making   a Salesforce teaching platform, two design systems, a paid Ghost theme
-rule     tokens are the source of truth; nothing ships with a dependency it didn't need
+{now_block()}
 ```
 
 {head("building")}
@@ -115,9 +117,10 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 
 <sub>Not a third-party widget. <a href="scripts/render.py"><code>scripts/render.py</code></a>
 draws every card on this page from the GitHub API in
-<a href="https://design.imswarnil.com">Frame &amp; Signal</a> — laid out the way its own home
-page is, in Geist, Geist Mono and one phrase of Geist Pixel, on the
-system's own grey ramp resolved out of <code>oklch()</code> in
+<a href="https://design.imswarnil.com">Im Design System</a> — measured in its twelve
+columns and drawn with them, one hairline down every gutter, the way every page of its
+docs is. Geist, Geist Mono and one phrase of Geist Pixel, on the system's own grey ramp
+resolved out of <code>oklch()</code> in
 <a href="scripts/tokens.py"><code>scripts/tokens.py</code></a>, because an SVG served through an
 image proxy gets no CSS. The type is converted to outlines so it renders the same everywhere.
 Same rule as the rest: no dependency it didn't need.</sub>
@@ -137,7 +140,8 @@ If it saved you a week, you can pay for a week of it.
   <sub>
     <a href="https://imswarnil.com">imswarnil.com</a> ·
     <a href="https://imswarnil.github.io">the index</a> ·
-    <a href="https://design.imswarnil.com">Frame &amp; Signal</a> ·
+    <a href="https://design.imswarnil.com">Im Design System</a> ·
+    <a href="https://obs.imswarnil.com">Broadcast Kit</a> ·
     <a href="https://x.com/imswarnil">@imswarnil</a>
   </sub>
 </div>
