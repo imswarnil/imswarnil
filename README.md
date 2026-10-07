@@ -98,7 +98,7 @@ rule     tokens are the source of truth; nothing ships with a dependency it didn
 
 <h2><picture><source media="(prefers-color-scheme: dark)" srcset="assets/head-numbers-dark.svg?v=eb0ad9d1"><source media="(prefers-color-scheme: light)" srcset="assets/head-numbers-light.svg?v=eb0ad9d1"><img alt="05 — The Numbers" src="assets/head-numbers-light.svg?v=eb0ad9d1" width="100%"></picture></h2>
 
-<div align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg?v=0cd855da"><source media="(prefers-color-scheme: light)" srcset="assets/stats-light.svg?v=0cd855da"><img alt="GitHub activity for imswarnil" src="assets/stats-light.svg?v=0cd855da" width="100%"></picture></div>
+<div align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg?v=a7118c07"><source media="(prefers-color-scheme: light)" srcset="assets/stats-light.svg?v=a7118c07"><img alt="GitHub activity for imswarnil" src="assets/stats-light.svg?v=a7118c07" width="100%"></picture></div>
 
 <sub>Not a third-party widget. <a href="scripts/render.py"><code>scripts/render.py</code></a>
 draws every card on this page from the GitHub API in
