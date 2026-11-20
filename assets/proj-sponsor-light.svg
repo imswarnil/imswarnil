@@ -4,7 +4,7 @@
 <defs><clipPath id="msponsor"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#msponsor)">
 <rect x="1" y="1" width="578" height="290" fill="#e5e5e5"/>
-<defs><pattern id="psponsor" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(135)"><line x1="0" y1="0" x2="0" y2="8" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#psponsor)"/>
+<defs><pattern id="psponsor" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="#d4d4d4" stroke-width="1"/><line x1="0" y1="0" x2="16" y2="0" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#psponsor)"/>
 <path d="M258.97 187.76V105.40H289.83Q304.91 105.40 312.74 110.74Q320.57 116.07 320.57 127.67Q320.57 132.89 318.42 136.78Q316.27 140.66 312.16 142.87Q308.04 145.07 302.24 145.30L302.12 145.07Q312.68 145.42 318.36 150.81Q324.05 156.21 324.05 165.14Q324.05 176.51 316.22 182.13Q308.39 187.76 294.00 187.76ZM274.05 175.00H293.31Q300.38 175.00 304.50 172.10Q308.62 169.20 308.62 163.52Q308.62 157.83 304.56 154.82Q300.50 151.80 293.31 151.80H274.05ZM274.05 139.97H289.36Q296.79 139.97 300.96 137.18Q305.14 134.40 305.14 129.06Q305.14 123.50 301.08 120.83Q297.02 118.16 289.36 118.16H274.05Z" fill="#a1a1a1"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#dddddd"/>

@@ -4,7 +4,7 @@
 <defs><clipPath id="mcrma"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mcrma)">
 <rect x="1" y="1" width="578" height="290" fill="#262626"/>
-<defs><pattern id="pcrma" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="#404040" stroke-width="1"/><line x1="0" y1="0" x2="16" y2="0" stroke="#404040" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pcrma)"/>
+<defs><pattern id="pcrma" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="translate(-1 -1)"><path d="M40 0 L0 0 0 40" fill="none" stroke="#404040" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pcrma)"/>
 <path d="M291.16 189.62Q279.91 189.62 271.32 184.45Q262.74 179.29 257.87 169.72Q253.00 160.15 253.00 146.70Q253.00 133.47 257.75 123.79Q262.51 114.10 271.09 108.82Q279.68 103.54 291.28 103.54Q307.05 103.54 315.75 111.37Q324.45 119.20 327.12 133.24L311.34 134.05Q309.84 125.93 304.85 121.29Q299.86 116.65 291.28 116.65Q284.32 116.65 279.21 120.36Q274.11 124.08 271.32 130.80Q268.54 137.53 268.54 146.70Q268.54 155.98 271.38 162.65Q274.22 169.32 279.33 172.91Q284.43 176.51 291.16 176.51Q300.32 176.51 305.37 171.46Q310.42 166.42 311.81 157.60L327.58 158.41Q325.96 168.04 321.32 175.06Q316.68 182.08 309.08 185.85Q301.48 189.62 291.16 189.62Z" fill="#525252"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#313131"/>

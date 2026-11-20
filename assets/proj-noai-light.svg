@@ -4,7 +4,7 @@
 <defs><clipPath id="mnoai"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mnoai)">
 <rect x="1" y="1" width="578" height="290" fill="#e5e5e5"/>
-<defs><pattern id="pnoai" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(135)"><line x1="0" y1="0" x2="0" y2="8" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pnoai)"/>
+<defs><pattern id="pnoai" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="#d4d4d4" stroke-width="1"/><line x1="0" y1="0" x2="16" y2="0" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#pnoai)"/>
 <path d="M255.90 187.76V105.40H273.53L309.02 167.34V105.40H324.10V187.76H306.01L270.98 127.56V187.76Z" fill="#a1a1a1"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#dddddd"/>

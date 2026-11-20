@@ -4,7 +4,7 @@
 <defs><clipPath id="mtrailblazer"><rect x="1" y="1" width="578" height="290" rx="1"/></clipPath></defs>
 <g clip-path="url(#mtrailblazer)">
 <rect x="1" y="1" width="578" height="290" fill="#e5e5e5"/>
-<defs><pattern id="ptrailblazer" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(135)"><line x1="0" y1="0" x2="0" y2="8" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#ptrailblazer)"/>
+<defs><pattern id="ptrailblazer" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="#d4d4d4" stroke-width="1"/><line x1="0" y1="0" x2="16" y2="0" stroke="#d4d4d4" stroke-width="1"/></pattern></defs><rect x="1" y="1" width="578" height="290" fill="url(#ptrailblazer)"/>
 <path d="M282.46 187.76V118.51H257.40V105.40H322.48V118.51H297.54V187.76Z" fill="#a1a1a1"/>
 </g>
 <rect x="0" y="291" width="580" height="1" fill="#dddddd"/>
